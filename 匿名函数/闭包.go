@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // 闭包是一种值引用,会保留副本,
 // 内层函数调用 外层函数 的 局部变量,相当于同一份工作增加了多个工作空间
@@ -21,6 +23,7 @@ func main() {
 	r2 := increment()
 	v3 := r2()
 	fmt.Println(v3)
+
 }
 
 func increment() func() int {
