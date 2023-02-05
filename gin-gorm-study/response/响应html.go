@@ -1,4 +1,4 @@
-package html
+package response
 
 import (
 	"net/http"

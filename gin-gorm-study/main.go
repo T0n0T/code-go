@@ -1,7 +1,7 @@
 package main
 
 import (
-	"test/html"
+	"test/gin-gorm-study/response"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,13 +15,13 @@ func main() {
 	router.StaticFile("/jpg", "static/test.jpg")
 
 	//json调用
-	router.GET("/", ResponseString)
-	router.GET("/json", ResponseJson)
-	router.GET("/json2", ResponseJsonMap)
-	router.GET("/json3", ResponseJsonH)
+	router.GET("/", response.ResponseString)
+	router.GET("/json", response.ResponseJson)
+	router.GET("/json2", response.ResponseJsonMap)
+	router.GET("/json3", response.ResponseJsonH)
 
 	//html调用
-	router.GET("/html", html.ResponseHtml)
+	router.GET("/html", response.ResponseHtml)
 
 	router.Run(":8080")
 }
