@@ -46,8 +46,8 @@ func RequestCreate(ctx *gin.Context) {
 		ctx.JSON(200, msgpack{0, "NULL", "修改失败"})
 		return
 	}
-	append(UserList, data)
-	ctx.JSON(200, gin.H{})
+	UserList = append(UserList, data)
+	ctx.JSON(200, msgpack{0, UserList, "成功"})
 }
 
 func RequestUpdate(ctx *gin.Context) {
@@ -62,7 +62,7 @@ func TestApi(router *gin.Engine) {
 	router.GET("/apitest", RequestGetList)
 	router.GET("/apitest/:id", RequestGetDetails)
 
-	// router.POST("/apitest", RequestCreate)
+	router.POST("/apitest", RequestCreate)
 
 	// router.PUT("/apitest/:id", RequestUpdate)
 
