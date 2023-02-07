@@ -36,6 +36,5 @@ func main() {
 		router.POST("/raw", request.RequestRawData)
 	}
 	request.TestApi(router)
-
 	router.Run(":8080")
 }

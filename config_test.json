@@ -1,0 +1,15 @@
+{
+  "1": { "Name": "三夏", "Sex": "female" },
+  "2": { "Name": "馨然", "Sex": "female" },
+  "3": { "Name": "大雄", "Sex": "male" }
+}	
+
+{
+    "stat":0,
+    "value":[
+        { "Name": "三夏", "Sex": "female" },
+        { "Name": "三夏", "Sex": "female" },
+        { "Name": "三夏", "Sex": "female" },
+    ]
+    
+}
