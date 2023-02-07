@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	pkgfile "test/file"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +17,7 @@ import (
 // PATCH：在服务器更新资源（客户端提供需要修改的资源数据）
 // DELETE：从服务器删除资源
 
-var FileName string = "/home/tiger/Desktop/code/vscode/code-go/config_test.json"
+var FileName string = "F:\\-code-go\\go-study\\config_test.json"
 
 type msgpack struct {
 	Status int    `json:"状态"`
@@ -49,13 +50,21 @@ func ReadJson(config_path string) interface{} {
 		List = append(List, value)
 		id++
 	}
+	str, _ := json.Marshal(List)
+	fmt.Println(string(str))
 
 	return List
 }
 
-// func WriteJson(config_path string) error {
+func WriteJson(config_path string, json_data []User) {
+	var str string
+	for _, idv := range json_data {
+		jsonstr, _ := json.Marshal(idv)
+		str = string(jsonstr) + str
+	}
 
-// }
+	pkgfile.WriteStringToFile(config_path, string(str))
+}
 
 func RequestGetList(ctx *gin.Context) {
 	var UserList = ReadJson(FileName)
@@ -100,6 +109,7 @@ func RequestCreate(ctx *gin.Context) {
 		return
 	}
 	UserList = append(UserList, data)
+	WriteJson(FileName, UserList)
 	ctx.JSON(200, msgpack{0, UserList, "创建成功"})
 }
 
