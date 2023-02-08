@@ -12,7 +12,7 @@ func main() {
 	router := gin.Default()
 
 	//html模版加载
-	router.LoadHTMLGlob("gin-gorm-study/template/*")
+	// router.LoadHTMLGlob("gin-gorm-study/template/*")
 	//加载静态资源，静态资源的本地路径是相对go.mod而言的
 	router.StaticFile("/jpg", "gin-gorm-study/static/test.jpg")
 	router.StaticFS("/staticfile", http.Dir("gin-gorm-study/static"))

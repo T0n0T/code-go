@@ -17,7 +17,7 @@ import (
 // PATCH：在服务器更新资源（客户端提供需要修改的资源数据）
 // DELETE：从服务器删除资源
 
-var FileName string = "F:\\-code-go\\go-study\\config_test.json"
+var FileName string = "/home/tiger/Desktop/code/vscode/code-go/config_test.json"
 
 type msgpack struct {
 	Status int    `json:"状态"`
@@ -25,57 +25,60 @@ type msgpack struct {
 	Msg    string `json:"信息"`
 }
 
-func ReadJson(config_path string) interface{} {
+type tagpack struct {
+	Num   interface{} `json:"num"`
+	Value []User      `json:"value"`
+}
+
+func ReadJson(config_path string) (num interface{}, value []User) {
 	var temp interface{}
-	var value User
-	var List []User
-	id := 0
 
 	fp, err := os.Open(config_path)
 	if err != nil {
 		fmt.Printf("读取文件失败:%#v", err)
-		return ""
+		return nil, nil
 	}
 
 	if err = json.NewDecoder(fp).Decode(&temp); err != nil {
 		fmt.Printf("文件解析失败:%#v", err)
-		return ""
+		return nil, nil
 	}
 
 	for _, idv := range temp.(map[string]interface{}) {
-
-		jsonstr, _ := json.Marshal(idv)
-		json.Unmarshal(jsonstr, &value)
-
-		List = append(List, value)
-		id++
+		switch idvType := idv.(type) {
+		case int, float32, float64:
+			num = idvType
+		case []interface{}:
+			var tmp User
+			for _, idvv := range idvType {
+				jsonstr, _ := json.Marshal(idvv)
+				json.Unmarshal(jsonstr, &tmp)
+				value = append(value, tmp)
+			}
+		default:
+			fmt.Println("配置文件含有未解析数据")
+		}
 	}
-	str, _ := json.Marshal(List)
-	fmt.Println(string(str))
 
-	return List
+	return num, value
 }
 
-func WriteJson(config_path string, json_data []User) {
-	var str string
-	for _, idv := range json_data {
-		jsonstr, _ := json.Marshal(idv)
-		str = string(jsonstr) + str
-	}
-
+func WriteJson(config_path string, num int, json_data []User) {
+	sendpack := tagpack{Num: num, Value: json_data}
+	str, _ := json.Marshal(sendpack)
 	pkgfile.WriteStringToFile(config_path, string(str))
 }
 
 func RequestGetList(ctx *gin.Context) {
-	var UserList = ReadJson(FileName)
-	ctx.JSON(200, msgpack{0, UserList.([]User), "成功"})
+	num, UserList := ReadJson(FileName)
+	ctx.JSON(200, msgpack{0, tagpack{num, UserList}, "成功"})
 }
 
 func RequestGetDetails(ctx *gin.Context) {
-	var UserList = ReadJson(FileName)
+	_, UserList := ReadJson(FileName)
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	if id < len(UserList.([]User)) {
-		ctx.JSON(200, msgpack{0, UserList.([]User)[id], "成功"})
+	if id < len(UserList) {
+		ctx.JSON(200, msgpack{0, UserList[id], "成功"})
 	} else {
 		ctx.JSON(200, msgpack{0, "NULL", "无数据"})
 	}
@@ -100,34 +103,35 @@ func RequestGetDetails(ctx *gin.Context) {
 // }
 
 func RequestCreate(ctx *gin.Context) {
-	var data User
-	var tempList = ReadJson(FileName)
-	UserList := tempList.([]User)
 
-	if err := Bindjson(ctx, &data); err != nil {
+	_, UserList := ReadJson(FileName)
+
+	data, err := Bindjson(ctx)
+	if err != nil {
 		ctx.JSON(200, msgpack{0, "NULL", "创建失败"})
 		return
 	}
-	UserList = append(UserList, data)
-	WriteJson(FileName, UserList)
-	ctx.JSON(200, msgpack{0, UserList, "创建成功"})
+	fmt.Println(data)
+	fmt.Println("here")
+
+	UserList = append(UserList, data.([]User)...)
+	WriteJson(FileName, len(UserList), UserList)
+	ctx.JSON(200, msgpack{0, tagpack{len(UserList), UserList}, "创建成功"})
 }
 
 func RequestUpdate(ctx *gin.Context) {
-	var data User
 	id, _ := strconv.Atoi(ctx.Param("id"))
+	_, UserList := ReadJson(FileName)
 
-	var tempList = ReadJson(FileName)
-	UserList := tempList.([]User)
-
-	if err := Bindjson(ctx, &data); err != nil {
-		ctx.JSON(200, msgpack{0, "NULL", "待更改数据解析失败"})
+	data, err := Bindjson(ctx)
+	if err != nil {
+		ctx.JSON(200, msgpack{0, "NULL", "创建失败"})
 		return
 	}
 
 	if id < len(UserList) {
-		UserList[id] = data
-		ctx.JSON(200, msgpack{0, UserList, "更改成功"})
+		UserList[id] = data.(User)
+		ctx.JSON(200, msgpack{0, tagpack{len(UserList), UserList}, "更改成功"})
 	} else {
 		ctx.JSON(200, msgpack{0, "NULL", "更改失败"})
 	}
@@ -144,7 +148,7 @@ func TestApi(router *gin.Engine) {
 
 	router.POST("/apitest", RequestCreate)
 
-	// router.PUT("/apitest/:id", RequestUpdate)
+	router.PUT("/apitest/:id", RequestUpdate)
 
 	// router.DELETE("/apitest", RequestDelete)
 

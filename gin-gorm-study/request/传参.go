@@ -12,18 +12,53 @@ type User struct {
 	Sex  string `json:"sex"`
 }
 
-func Bindjson(ctx *gin.Context, obj any) error {
+// var Usertemp [2]User
+
+// func Bindjson(ctx *gin.Context, obj any) error {
+// 	body, _ := ctx.GetRawData()
+// 	rawtype := ctx.GetHeader("Content-Type")
+// 	var tmp interface{}
+
+// 	fmt.Println(obj)
+
+// 	if rawtype == "application/json" {
+// 		json.Unmarshal(body, &tmp)
+// 		for idx, idv := range tmp.([]interface{}) {
+// 			var temp User
+// 			jsonstr, _ := json.Marshal(idv)
+// 			json.Unmarshal(jsonstr, &temp)
+// 			Usertemp[idx] = temp
+// 		}
+// 	}
+// 	fmt.Println(Usertemp)
+// 	// copy(obj.([]User),Usertemp)
+// 	obj = Usertemp
+
+// 	fmt.Println(obj)
+
+// 	return nil
+// }
+
+func Bindjson(ctx *gin.Context) (obj any, err error) {
 	body, _ := ctx.GetRawData()
 	rawtype := ctx.GetHeader("Content-Type")
-	if rawtype == "application/json" {
 
-		// fmt.Println(string(body))
-		err := json.Unmarshal(body, &obj)
-		if err != nil {
-			return err
+	var raw []User
+	var tmp interface{}
+
+	if rawtype == "application/json" {
+		if err := json.Unmarshal(body, &tmp); err != nil {
+			fmt.Println("解析失败...")
+		}
+		for _, idv := range tmp.([]interface{}) {
+			var temp User
+			jsonstr, _ := json.Marshal(idv)
+			json.Unmarshal(jsonstr, &temp)
+			raw = append(raw, temp)
 		}
 	}
-	return nil
+	obj = raw
+	return obj, nil
 }
 
 func RequestQuery(ctx *gin.Context) {
@@ -46,8 +81,7 @@ func RequestParam(ctx *gin.Context) {
 
 // 获取原始值,后续接入处理
 func RequestRawData(ctx *gin.Context) {
-	var a User
-	err := Bindjson(ctx, &a)
+	a, err := Bindjson(ctx)
 	if err == nil {
 		fmt.Println(a)
 	}
