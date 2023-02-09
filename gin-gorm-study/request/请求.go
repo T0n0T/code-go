@@ -65,42 +65,24 @@ func ReadJson(config_path string) (num interface{}, value []User) {
 
 func WriteJson(config_path string, num int, json_data []User) {
 	sendpack := tagpack{Num: num, Value: json_data}
-	str, _ := json.Marshal(sendpack)
+	str, _ := json.MarshalIndent(sendpack, "", "\t")
 	pkgfile.WriteStringToFile(config_path, string(str))
 }
 
 func RequestGetList(ctx *gin.Context) {
 	num, UserList := ReadJson(FileName)
-	ctx.JSON(200, msgpack{0, tagpack{num, UserList}, "成功"})
+	ctx.IndentedJSON(200, msgpack{0, tagpack{num, UserList}, "成功"})
 }
 
 func RequestGetDetails(ctx *gin.Context) {
 	_, UserList := ReadJson(FileName)
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	if id < len(UserList) {
-		ctx.JSON(200, msgpack{0, UserList[id], "成功"})
+		ctx.IndentedJSON(200, msgpack{0, UserList[id], "成功"})
 	} else {
-		ctx.JSON(200, msgpack{0, "NULL", "无数据"})
+		ctx.IndentedJSON(200, msgpack{0, "NULL", "无数据"})
 	}
 }
-
-// func RequestMultiCreate(ctx *gin.Context) {
-
-// 	var data MultiUser
-// 	var tempList = ReadJson(FileName)
-// 	UserList := tempList.([]User)
-// 	err := Bindjson(ctx, &data)
-// 	if err != nil {
-// 		ctx.JSON(200, msgpack{0, "NULL", "修改失败"})
-// 		return
-// 	}
-
-// 	// for i := 0; i < len(data); i++ {
-// 	// 	UserList = append(UserList, data[i])
-// 	// }
-// 	UserList = append(UserList, data.Temp, data.Temp2)
-// 	ctx.JSON(200, msgpack{0, UserList, "成功"})
-// }
 
 func RequestCreate(ctx *gin.Context) {
 
@@ -108,7 +90,7 @@ func RequestCreate(ctx *gin.Context) {
 
 	data, err := Bindjson(ctx)
 	if err != nil {
-		ctx.JSON(200, msgpack{0, "NULL", "创建失败"})
+		ctx.IndentedJSON(200, msgpack{0, "NULL", "创建失败"})
 		return
 	}
 	fmt.Println(data)
@@ -116,7 +98,7 @@ func RequestCreate(ctx *gin.Context) {
 
 	UserList = append(UserList, data.([]User)...)
 	WriteJson(FileName, len(UserList), UserList)
-	ctx.JSON(200, msgpack{0, tagpack{len(UserList), UserList}, "创建成功"})
+	ctx.IndentedJSON(200, msgpack{0, tagpack{len(UserList), UserList}, "创建成功"})
 }
 
 func RequestUpdate(ctx *gin.Context) {
@@ -125,31 +107,39 @@ func RequestUpdate(ctx *gin.Context) {
 
 	data, err := Bindjson(ctx)
 	if err != nil {
-		ctx.JSON(200, msgpack{0, "NULL", "创建失败"})
+		ctx.IndentedJSON(200, msgpack{0, "NULL", "创建失败"})
 		return
 	}
 
 	if id < len(UserList) {
 		UserList[id] = data.(User)
-		ctx.JSON(200, msgpack{0, tagpack{len(UserList), UserList}, "更改成功"})
+		WriteJson(FileName, len(UserList), UserList)
+		ctx.IndentedJSON(200, msgpack{0, tagpack{len(UserList), UserList}, "更改成功"})
 	} else {
-		ctx.JSON(200, msgpack{0, "NULL", "更改失败"})
+		ctx.IndentedJSON(200, msgpack{0, "NULL", "更改失败"})
 	}
 
 }
 
 func RequestDelete(ctx *gin.Context) {
-	ctx.JSON(200, gin.H{})
+	id, _ := strconv.Atoi(ctx.Param("id"))
+	_, UserList := ReadJson(FileName)
+	i := 0
+	for idx, idv := range UserList {
+		if idx != id {
+			UserList[i] = idv
+			i++
+		}
+	}
+	UserList = UserList[:i]
+	WriteJson(FileName, len(UserList), UserList)
+	ctx.IndentedJSON(200, msgpack{0, tagpack{len(UserList), UserList}, "删除成功"})
 }
 
 func TestApi(router *gin.Engine) {
 	router.GET("/apitest", RequestGetList)
 	router.GET("/apitest/:id", RequestGetDetails)
-
 	router.POST("/apitest", RequestCreate)
-
 	router.PUT("/apitest/:id", RequestUpdate)
-
-	// router.DELETE("/apitest", RequestDelete)
-
+	router.DELETE("/apitest/:id", RequestDelete)
 }
