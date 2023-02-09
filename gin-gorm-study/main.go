@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"test/gin-gorm-study/middleware"
 	"test/gin-gorm-study/request"
 	"test/gin-gorm-study/response"
 
@@ -21,11 +22,17 @@ func main() {
 	router.StaticFile("/jpg", "./static/test.jpg")
 	router.StaticFS("/staticfile", http.Dir("./static"))
 
+	//打印当前程序所在路径
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(dir)
+
+	//中间件的加载要在所需要插入的路由前,中间件函数也可以直接在路由方法中放置于函数处
+	middleware.TestMiddle(router)
+	request.TestApi(router)
+	request.TestBind(router)
 
 	{
 		//json调用
@@ -40,12 +47,12 @@ func main() {
 		//重定向
 		router.GET("/redirect", response.ResponseRedirect)
 	}
+
 	{
 		router.GET("/query", request.RequestQuery)
 		router.GET("/param/:user/:id", request.RequestParam)
 		router.POST("/raw", request.RequestRawData)
 	}
-	request.TestApi(router)
-	request.TestBind(router)
+
 	router.Run(":8080")
 }
