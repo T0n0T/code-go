@@ -17,7 +17,7 @@ import (
 // PATCH：在服务器更新资源（客户端提供需要修改的资源数据）
 // DELETE：从服务器删除资源
 
-var FileName string = "/home/tiger/Desktop/code/vscode/code-go/config_test.json"
+var FileName string = "../config_test.json"
 
 type msgpack struct {
 	Status int    `json:"状态"`
@@ -137,10 +137,12 @@ func requestDelete(ctx *gin.Context) {
 }
 
 func TestApi(router *gin.Engine) {
-	router.GET("/apitest", requestGetList)
+
+	apitestGroup := router.Group("/apitest")
+	apitestGroup.GET("/", requestGetList)
 	// ":id"在字段中定义了传入的param
-	router.GET("/apitest/:id", requestGetDetails)
-	router.POST("/apitest", requestCreate)
-	router.PUT("/apitest/:id", requestUpdate)
-	router.DELETE("/apitest/:id", requestDelete)
+	apitestGroup.GET("/:id", requestGetDetails)
+	apitestGroup.POST("/", requestCreate)
+	apitestGroup.PUT("/:id", requestUpdate)
+	apitestGroup.DELETE("/:id", requestDelete)
 }

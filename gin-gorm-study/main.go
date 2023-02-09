@@ -1,7 +1,11 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"test/gin-gorm-study/request"
 	"test/gin-gorm-study/response"
 
@@ -12,10 +16,16 @@ func main() {
 	router := gin.Default()
 
 	//html模版加载
-	// router.LoadHTMLGlob("gin-gorm-study/template/*")
+	router.LoadHTMLGlob("./template/*")
 	//加载静态资源，静态资源的本地路径是相对go.mod而言的
-	router.StaticFile("/jpg", "gin-gorm-study/static/test.jpg")
-	router.StaticFS("/staticfile", http.Dir("gin-gorm-study/static"))
+	router.StaticFile("/jpg", "./static/test.jpg")
+	router.StaticFS("/staticfile", http.Dir("./static"))
+
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dir)
 
 	{
 		//json调用
