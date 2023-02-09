@@ -69,12 +69,12 @@ func WriteJson(config_path string, num int, json_data []User) {
 	pkgfile.WriteStringToFile(config_path, string(str))
 }
 
-func RequestGetList(ctx *gin.Context) {
+func requestGetList(ctx *gin.Context) {
 	num, UserList := ReadJson(FileName)
 	ctx.IndentedJSON(200, msgpack{0, tagpack{num, UserList}, "成功"})
 }
 
-func RequestGetDetails(ctx *gin.Context) {
+func requestGetDetails(ctx *gin.Context) {
 	_, UserList := ReadJson(FileName)
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	if id < len(UserList) {
@@ -84,7 +84,7 @@ func RequestGetDetails(ctx *gin.Context) {
 	}
 }
 
-func RequestCreate(ctx *gin.Context) {
+func requestCreate(ctx *gin.Context) {
 
 	_, UserList := ReadJson(FileName)
 
@@ -101,7 +101,7 @@ func RequestCreate(ctx *gin.Context) {
 	ctx.IndentedJSON(200, msgpack{0, tagpack{len(UserList), UserList}, "创建成功"})
 }
 
-func RequestUpdate(ctx *gin.Context) {
+func requestUpdate(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	_, UserList := ReadJson(FileName)
 
@@ -121,7 +121,7 @@ func RequestUpdate(ctx *gin.Context) {
 
 }
 
-func RequestDelete(ctx *gin.Context) {
+func requestDelete(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	_, UserList := ReadJson(FileName)
 	i := 0
@@ -137,9 +137,10 @@ func RequestDelete(ctx *gin.Context) {
 }
 
 func TestApi(router *gin.Engine) {
-	router.GET("/apitest", RequestGetList)
-	router.GET("/apitest/:id", RequestGetDetails)
-	router.POST("/apitest", RequestCreate)
-	router.PUT("/apitest/:id", RequestUpdate)
-	router.DELETE("/apitest/:id", RequestDelete)
+	router.GET("/apitest", requestGetList)
+	// ":id"在字段中定义了传入的param
+	router.GET("/apitest/:id", requestGetDetails)
+	router.POST("/apitest", requestCreate)
+	router.PUT("/apitest/:id", requestUpdate)
+	router.DELETE("/apitest/:id", requestDelete)
 }
