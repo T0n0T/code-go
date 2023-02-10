@@ -1,0 +1,31 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "环境变量设置",
+      "type": "shell",
+      "command": "export",
+      "args": [
+        "CGO_ENABLED=0",
+        "GOOS=linux",
+        "GOARCH=arm"
+      ]
+    },
+    {
+      "label": "go:交叉编译",
+      "type": "shell",
+      "command": "go",
+      "options": {
+        "cwd": "${fileDirname}"
+      },
+      "args": [
+        "build",
+        "-o",
+        "${workspaceFolder}/build/",
+      ],
+      "dependsOn": "环境变量设置"
+    }
+  ]
+}

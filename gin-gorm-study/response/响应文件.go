@@ -1,7 +1,11 @@
 package response
 
-import "fmt"
+import (
+	"fmt"
 
-func ResponseFile() {
+	"github.com/gin-gonic/gin"
+)
+
+func ResponseFile(ctx *gin.Context) {
 	fmt.Println("111")
 }

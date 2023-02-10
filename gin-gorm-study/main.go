@@ -44,6 +44,9 @@ func main() {
 		//html调用
 		router.GET("/html", response.ResponseHtml)
 
+		//文件上传
+		router.POST("/upload", response.ResponseFile)
+
 		//重定向
 		router.GET("/redirect", response.ResponseRedirect)
 	}
