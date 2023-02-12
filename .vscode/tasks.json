@@ -4,8 +4,16 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "环境变量设置",
+      "label": "linux环境变量设置",
       "type": "shell",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
       "command": "export",
       "args": [
         "CGO_ENABLED=0",
@@ -16,15 +24,35 @@
     {
       "label": "go:交叉编译",
       "type": "shell",
-      "command": "go",
       "options": {
         "cwd": "${fileDirname}"
       },
-      "args": [
-        "build",
-        "-o",
-        "${workspaceFolder}/build/",
-      ],
+      "linux": {
+        "command": "go",
+        "args": [
+          "build",
+          "-o",
+          "${workspaceFolder}/build/",
+        ],
+        "dependsOn": "linux环境变量设置"
+      },
+      "windows": {
+        "command": "",
+        "args": [
+          "$env:CGO_ENABLED=0\n\r",
+          "$env:GOOS='linux'\n\r",
+          "$env:GOARCH='arm'\n\r",
+          "go",
+          "build",
+          "-o",
+          "${workspaceFolder}/build/",
+        ]
+      }
+    },
+    {
+      "label": "echo",
+      "type": "shell",
+      "command": "go env",
       "dependsOn": "环境变量设置"
     }
   ]

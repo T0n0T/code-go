@@ -16,7 +16,7 @@ func ResponseFile(ctx *gin.Context) {
 		return
 	}
 	fmt.Println(file.Filename)
-	dst := fmt.Sprintf("./%s", file.Filename)
+	dst := fmt.Sprintf("./save/%s", file.Filename)
 	ctx.SaveUploadedFile(file, dst)
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": fmt.Sprintf("'%s' upload success!", file.Filename),
