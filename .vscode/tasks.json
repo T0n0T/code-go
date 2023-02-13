@@ -18,17 +18,35 @@
       "args": [
         "CGO_ENABLED=0",
         "GOOS=linux",
-        "GOARCH=arm64"
+        "GOARCH=arm"
       ]
     },
     {
-      "label": "go:交叉编译",
+      "label": "go:linux交叉编译",
       "type": "shell",
       "options": {
         "cwd": "${fileDirname}"
       },
       "command": "go",
       "args": [
+        "build",
+        "-o",
+        "${workspaceFolder}/build/",
+      ],
+      "dependsOn": "linux环境变量设置"
+    },
+    {
+      "label": "go:win交叉编译",
+      "type": "shell",
+      "options": {
+        "cwd": "${fileDirname}"
+      },
+      "command": "",
+      "args": [
+        "$env:CGO_ENABLED=0\n\r",
+        "$env:GOOS=`linux`\n\r",
+        "$env:GOARCH=`arm`\n\r",
+        "go",
         "build",
         "-o",
         "${workspaceFolder}/build/",
