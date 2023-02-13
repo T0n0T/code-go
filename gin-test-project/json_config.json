@@ -1,0 +1,6 @@
+{
+    "name":"test",
+    "mode":"debug",
+    "host":"",
+    "port":"8080"
+}
