@@ -12,6 +12,13 @@
             "program": "${workspaceFolder}/gin-gorm-study/"
         },
         {
+            "name": "gin-project",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/gin-test-project/"
+        },
+        {
             "name": "go单文件调试",
             "type": "go",
             "request": "launch",
