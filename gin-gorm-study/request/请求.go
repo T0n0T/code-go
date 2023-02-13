@@ -43,6 +43,7 @@ func ReadJson(config_path string) (num interface{}, value []User) {
 		fmt.Printf("文件解析失败:%#v", err)
 		return nil, nil
 	}
+	defer fp.Close()
 
 	for _, idv := range temp.(map[string]interface{}) {
 		switch idvType := idv.(type) {
