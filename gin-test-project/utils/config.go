@@ -7,10 +7,15 @@ import (
 )
 
 type Config struct {
-	Name string `json:"name"`
-	Mode string `json:"mode"`
-	Host string `json:"host"`
-	Port string `json:"port"`
+	Name     string `json:"name"`
+	Mode     string `json:"mode"`
+	Host     string `json:"host"`
+	Port     string `json:"port"`
+	Dbuser   string `json:"dbuser"`
+	Dbpasswd string `json:"dbpasswd"`
+	Dbhost   string `json:"dbhost"`
+	Dbport   string `json:"dbport"`
+	Dbname   string `json:"dbname"`
 }
 
 var cfg *Config = nil

@@ -9,10 +9,12 @@
 <body>
     你好,{{.user_name}}
     <!-- 静态资源加载的是gin的映射地址 -->    
-    <form action="/upload" method="post">
+    <form action="/upload" method="post" enctype="multipart/form-data">
         <input type="file" name="pre-upload" >
         <input type="submit" value="上传">
+    
     </form>
     <div align="center"><img src="/jpg"></div>
+
 </body>
 </html>

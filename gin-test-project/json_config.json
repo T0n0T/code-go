@@ -1,6 +1,11 @@
 {
-    "name":"test",
-    "mode":"debug",
-    "host":"",
-    "port":"8080"
+  "name": "test",
+  "mode": "debug",
+  "host": "",
+  "port": "8080",
+  "dbuser": "admin",
+  "dbpasswd":"",
+  "dbhost": "127.0.0.1",
+  "dbport": "3306",
+  "dbname": "test"
 }
