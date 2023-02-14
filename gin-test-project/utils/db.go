@@ -36,6 +36,10 @@ func InitMysql(cfg *Config) *gorm.DB {
 	return db
 }
 
-func DbExport(db *gorm.DB, cfg *Config) {
-	RunCommand("./", "mysqldump", "-h", cfg.Dbhost+":"+cfg.Dbport, "-p", cfg.Dbuser, "-p", cfg.Dbpasswd, "gva>./gva.sql")
+func DbExport(cfg *Config) {
+	RunCommand("./", "mysqldump"+" -u"+cfg.Dbuser+" -p"+cfg.Dbpasswd+" gva > gva.sql")
+}
+
+func DbImport(db *gorm.DB, cfg *Config) {
+
 }
