@@ -2,8 +2,10 @@ package utils
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
+	_"github.com/go-sql-driver/mysql"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -25,21 +27,36 @@ func (UserInfo) TableName() string {
 	return "UserInfo"
 }
 
-func InitMysql(cfg *Config) *gorm.DB {
+type Mysql struct {
+}
+
+var Db *Mysql = nil
+
+func (*Mysql) InitSql(cfg *Config) (db *gorm.DB, err error) {
 	dsn := cfg.Dbuser + ":@tcp(" + cfg.Dbhost + ":" + cfg.Dbport + ")/" + cfg.Dbname + "?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		fmt.Println("mysql连接失败")
+		return
 	}
 
-	db.AutoMigrate(&UserInfo{})
-	return db
+	// db.AutoMigrate(&UserInfo{})
+	return
 }
 
-func DbExport(cfg *Config) {
-	RunCommand("./", "mysqldump"+" -u"+cfg.Dbuser+" -p"+cfg.Dbpasswd+" gva > gva.sql")
+func (*Mysql) Export(cfg *Config) {
+	go func() {
+		RunCommand("./", "mysqldump", "-u"+cfg.Dbuser, "-p"+cfg.Dbpasswd, "gva", "-r"+"./gva.sql")
+	}()
 }
 
-func DbImport(db *gorm.DB, cfg *Config) {
-
+func (*Mysql) Import(db *gorm.DB) {
+	// db.Exec("source ./gva.sql")
+	mysql, err := db.DB()
+	if err != nil {
+		return
+	}
+	var ssss dbsql.
+	_, err = mysql.Exec("source ./gva.sql")
+	fmt.Println(err.Error())
 }
