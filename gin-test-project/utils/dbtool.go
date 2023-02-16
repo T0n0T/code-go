@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	_"github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -56,7 +56,7 @@ func (*Mysql) Import(db *gorm.DB) {
 	if err != nil {
 		return
 	}
-	var ssss dbsql.
+
 	_, err = mysql.Exec("source ./gva.sql")
 	fmt.Println(err.Error())
 }
