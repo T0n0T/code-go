@@ -2,20 +2,28 @@ package main
 
 import (
 	"fmt"
+	"test/gin-test-project/router"
 	"test/gin-test-project/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	r := gin.Default()
 	cfg, err := utils.ConfigParse("./json_config.json")
+	utils.PROJ_Config = *cfg
 	if err != nil {
+		fmt.Println("配置解析失败...")
 		panic(err.Error())
 	}
-	// utils.DbExport(cfg)
-	db, _ := utils.Db.InitSql(cfg)
-	utils.Db.Import(db)
-	fmt.Println(cfg)
+	utils.PROJ_DB = new(utils.Mysql)
+	utils.PROJ_DB.DB, _ = utils.PROJ_DB.InitSql(cfg)
+
+	GinSTART(cfg)
+
+}
+
+func GinSTART(cfg *utils.Config) {
+	r := gin.Default()
+	router.InitRouter(r)
 	r.Run(cfg.Host + ":" + cfg.Port)
 }

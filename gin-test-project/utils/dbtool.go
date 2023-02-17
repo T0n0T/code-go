@@ -1,36 +1,21 @@
 package utils
 
 import (
-	"database/sql"
 	"fmt"
-	"time"
+	"io/ioutil"
+	"log"
+	"os"
+	"strings"
+	"test/gin-test-project/model"
 
 	_ "github.com/go-sql-driver/mysql"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-type UserInfo struct {
-	gorm.Model
-	Name     string
-	Age      sql.NullInt64
-	Birthday *time.Time
-	Email    string `gorm:"type:varchar(100);unique_index"` //唯一索引
-	Role     string `gorm:"size:255"`
-	Member   string `gorm:"unique;not null"`
-	Num      string `gorm:"AUTO_INCREMENT"` //自增
-	Address  string `gorm:"index:addr"`     //addr 为索引
-	Ignore   int    `gorm:"-"`
-}
-
-func (UserInfo) TableName() string {
-	return "UserInfo"
-}
-
 type Mysql struct {
+	DB *gorm.DB
 }
-
-var Db *Mysql = nil
 
 func (*Mysql) InitSql(cfg *Config) (db *gorm.DB, err error) {
 	dsn := cfg.Dbuser + ":@tcp(" + cfg.Dbhost + ":" + cfg.Dbport + ")/" + cfg.Dbname + "?charset=utf8mb4&parseTime=True&loc=Local"
@@ -39,24 +24,43 @@ func (*Mysql) InitSql(cfg *Config) (db *gorm.DB, err error) {
 		fmt.Println("mysql连接失败")
 		return
 	}
-
-	// db.AutoMigrate(&UserInfo{})
+	RegisTable(db)
+	// sql, _ := PROJ_DB.DB.DB()
+	// defer sql.Close()
 	return
 }
 
 func (*Mysql) Export(cfg *Config) {
 	go func() {
-		RunCommand("./", "mysqldump", "-u"+cfg.Dbuser, "-p"+cfg.Dbpasswd, "gva", "-r"+"./gva.sql")
+		RunCommand("./", "mysqldump", "-u"+cfg.Dbuser, "-p"+cfg.Dbpasswd, "gva", "-r"+"./tmp/gva.sql")
 	}()
 }
 
-func (*Mysql) Import(db *gorm.DB) {
-	// db.Exec("source ./gva.sql")
-	mysql, err := db.DB()
-	if err != nil {
-		return
+func (*Mysql) Import(db *gorm.DB) (err error) {
+	sqls, _ := ioutil.ReadFile("./tmp/gva.sql")
+	sqlArr := strings.Split(string(sqls), ";")
+	for _, sql := range sqlArr {
+		sql = strings.TrimSpace(sql)
+		if sql == "" {
+			continue
+		}
+		err := db.Exec(sql).Error
+		if err != nil {
+			log.Println("数据库导入失败:" + err.Error())
+			return err
+		} else {
+			log.Println(sql, "\t success!")
+		}
 	}
-
-	_, err = mysql.Exec("source ./gva.sql")
 	fmt.Println(err.Error())
+	return
+}
+
+func RegisTable(db *gorm.DB) {
+	err := db.AutoMigrate(model.LoraStruct{})
+	if err != nil {
+		fmt.Println("表单初始化失败...")
+		os.Exit(0)
+	}
+	fmt.Println("表单初始化成功...")
 }
