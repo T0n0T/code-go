@@ -13,9 +13,9 @@ func (*DbRouter) DbRouterInit(router *gin.Engine) {
 	dbr := router.Group("Db")
 	routerapi := v1.ApiEnter.DbloraApi
 	{
-		dbr.POST("change", routerapi.CreateLoraStruct)
-		dbr.DELETE("change", routerapi.DeleteLoraStruct)
-		dbr.PUT("change", routerapi.UpdateLoraStruct)
-		dbr.GET("change", routerapi.GetLoraStruct)
+		dbr.POST("lora", routerapi.CreateLoraStruct)
+		dbr.DELETE("lora", routerapi.DeleteLoraStruct)
+		dbr.PUT("lora", routerapi.UpdateLoraStruct)
+		dbr.GET("lora", routerapi.GetLoraStruct)
 	}
 }
