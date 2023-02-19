@@ -153,6 +153,7 @@ func createWs(c *gin.Context, hub *Hub) {
 
 func main() {
 	hub := newHub()
+
 	go hub.run()
 	router := gin.Default()
 	router.LoadHTMLFiles("index.html")
