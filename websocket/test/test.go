@@ -151,17 +151,17 @@ func createWs(c *gin.Context, hub *Hub) {
 	client.hub.register <- client
 }
 
-// func main() {
-// 	hub := newHub()
+func main() {
+	hub := newHub()
 
-// 	go hub.run()
-// 	router := gin.Default()
-// 	router.LoadHTMLFiles("index.html")
-// 	router.GET("/", func(c *gin.Context) {
-// 		c.HTML(http.StatusOK, "index.html", nil)
-// 	})
-// 	router.GET("/ws", func(ctx *gin.Context) {
-// 		createWs(ctx, hub)
-// 	})
-// 	router.Run(":8080")
-// }
+	go hub.run()
+	router := gin.Default()
+	router.LoadHTMLFiles("index.html")
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", nil)
+	})
+	router.GET("/ws", func(ctx *gin.Context) {
+		createWs(ctx, hub)
+	})
+	router.Run(":8080")
+}

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"net/http"
+	"log"
 	"time"
 
 	"test/gin-test-project/utils"
@@ -13,23 +13,28 @@ import (
 
 func main() {
 	r := gin.Default()
-	m := melody.New()
+
 	cfg := &serial.Config{Name: "COM7", Baud: 115200, ReadTimeout: 3 /*毫秒*/}
 	utils.OpenSerial(cfg)
-
-	r.GET("/", func(c *gin.Context) {
-		http.ServeFile(c.Writer, c.Request, "index.html")
-	})
-
+	m := melody.New()
 	r.GET("/ws", func(c *gin.Context) {
 		m.HandleRequest(c.Writer, c.Request)
-		go func() {
-			m.Broadcast([]byte("1234"))
-			m.HandleMessage()
-			time.Sleep(1 * time.Second)
-		}()
-
 	})
+
+	go func() {
+		for {
+			m.Broadcast([]byte("1234"))
+			s, err := m.Sessions()
+			log.Println(s)
+			if err != nil {
+				err = s[0].Write([]byte("123465"))
+				if err != nil {
+					log.Println(err)
+				}
+			}
+			time.Sleep(1 * time.Second)
+		}
+	}()
 
 	r.Run(":8080")
 }
