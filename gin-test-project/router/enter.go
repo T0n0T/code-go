@@ -1,6 +1,7 @@
 package router
 
 import (
+	"test/gin-test-project/router/beep"
 	"test/gin-test-project/router/lora"
 	"test/gin-test-project/router/system"
 
@@ -8,6 +9,7 @@ import (
 )
 
 type Routergroup struct {
+	beep.BeepRouter
 	lora.DbRouter
 	system.ConfigRouter
 	system.SqlRouter
