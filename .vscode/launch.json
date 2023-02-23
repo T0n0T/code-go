@@ -30,8 +30,9 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/gin-gorm-study/",
-            "preLaunchTask": "go:交叉编译"
+            
+            "program": "${fileDirname}",
+            "preLaunchTask": "go:linux交叉编译"
         }
     ]
 }

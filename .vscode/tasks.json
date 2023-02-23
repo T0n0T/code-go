@@ -4,28 +4,15 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "linux环境变量设置",
-      "type": "shell",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared",
-        "showReuseMessage": true,
-        "clear": false
-      },
-      "command": "export",
-      "args": [
-        "CGO_ENABLED=0",
-        "GOOS=linux",
-        "GOARCH=arm"
-      ]
-    },
-    {
       "label": "go:linux交叉编译",
       "type": "shell",
       "options": {
-        "cwd": "${fileDirname}"
+        "cwd": "${fileDirname}",
+        "env": {
+          "CGO_ENABLED": "0",
+          "GOOS": "linux",
+          "GOARCH": "arm",
+        }
       },
       "command": "go",
       "args": [
@@ -33,7 +20,6 @@
         "-o",
         "${workspaceFolder}/build/",
       ],
-      "dependsOn": "linux环境变量设置"
     },
     {
       "label": "go:win交叉编译",
@@ -54,10 +40,25 @@
       "dependsOn": "linux环境变量设置"
     },
     {
-      "label": "echo",
+      "label": "go:linux-CGO交叉编译",
       "type": "shell",
-      "command": "go env",
-      "dependsOn": "环境变量设置"
-    }
+      "options": {
+        "cwd": "${fileDirname}",
+        "env": {
+          "CGO_ENABLED": "1",
+          "GOOS": "linux",
+          "GOARCH": "arm",
+          "CC":"arm-none-linux-gnueabihf-gcc",
+          "CXX": "arm-none-linux-gnueabihf-gcc",
+          "AR": "arm-none-linux-gnueabihf-ar"
+        }
+      },
+      "command": "go",
+      "args": [
+        "build",
+        "-o",
+        "${workspaceFolder}/build/",
+      ],
+    },
   ]
 }
