@@ -21,4 +21,5 @@ func InitRouter(r *gin.Engine) {
 	RouterEnter.DbRouter.DbRouterInit(r)
 	RouterEnter.ConfigRouter.ConfigRouterInit(r)
 	RouterEnter.SqlRouter.SqlRouterInit(r)
+	RouterEnter.BeepRouter.BeepRouterInit(r)
 }

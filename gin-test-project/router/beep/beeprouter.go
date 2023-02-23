@@ -9,9 +9,12 @@ import (
 type BeepRouter struct {
 }
 
-func (*BeepRouter) DbRouterInit(router *gin.Engine) {
+func (*BeepRouter) BeepRouterInit(router *gin.Engine) {
 	api := v1.ApiEnter.BeepApi
 	{
 		router.POST("beep", api.BeepAction)
+		router.POST("beep", func(ctx *gin.Context) {
+
+		})
 	}
 }
