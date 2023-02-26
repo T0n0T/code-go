@@ -4,6 +4,17 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "go x86构建",
+      "type": "shell",
+      "options": {
+        "cwd": "${fileDirname}"
+      },
+      "command": "go",
+      "args": [
+        "build"
+      ]
+    },
+    {
       "label": "go:linux交叉编译",
       "type": "shell",
       "options": {
@@ -48,7 +59,7 @@
           "CGO_ENABLED": "1",
           "GOOS": "linux",
           "GOARCH": "arm",
-          "CC":"arm-none-linux-gnueabihf-gcc",
+          "CC": "arm-none-linux-gnueabihf-gcc",
           "CXX": "arm-none-linux-gnueabihf-gcc",
           "AR": "arm-none-linux-gnueabihf-ar"
         }

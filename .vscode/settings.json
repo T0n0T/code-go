@@ -3,5 +3,10 @@
     "code-runner.cwd": "",
     "code-runner.saveFileBeforeRun": true,
     "code-runner.saveAllFilesBeforeRun": true,
+    "files.associations": {
+        "*.cpp": "cpp",
+        "*.html": "html",
+        "iostream": "cpp"
+    },
 
 }

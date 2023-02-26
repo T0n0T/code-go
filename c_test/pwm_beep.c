@@ -55,6 +55,34 @@ static void parse_opts(int argc, char *argv[])
 	}
 }
 
+void beep_action(int i)
+{
+    int fd, ret;
+    struct input_event event;
+
+    if ((fd = open(device, O_RDWR)) < 0)    {
+        perror("beep test wrong");
+        return 1;
+    }
+    event.type = EV_SND;   
+    event.code = SND_BELL;
+    switch (i)
+    {
+    case 0:
+        event.value = 0;
+        ret = write(fd, &event, sizeof(struct input_event));
+        break;
+    case 1:        
+        event.value = period;
+        ret = write(fd, &event, sizeof(struct input_event));
+        break;
+    
+    default:
+        break;
+    }
+    close(fd);
+}
+
 int main(int argc, char *argv[])
 {
     int fd, ret;
