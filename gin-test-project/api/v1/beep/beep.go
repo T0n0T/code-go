@@ -10,13 +10,26 @@ import (
 type BeepApi struct {
 }
 
+// func (*BeepApi) BeepAction(c *gin.Context) {
+// 	str := c.Query("action")
+// 	if str == "on" {
+// 		beep.BeepOn()
+// 		utils.OkWithMessage("beep on", c)
+// 	} else if str == "off" {
+// 		beep.BeepOff()
+// 		utils.OkWithMessage("beep off", c)
+// 	} else {
+// 		utils.FailWithMessage("wrong action.", c)
+// 	}
+// }
+
 func (*BeepApi) BeepAction(c *gin.Context) {
 	str := c.Query("action")
 	if str == "on" {
-		beep.BeepOn()
+		beep.BeepAct("1")
 		utils.OkWithMessage("beep on", c)
 	} else if str == "off" {
-		beep.BeepOff()
+		beep.BeepAct("0")
 		utils.OkWithMessage("beep off", c)
 	} else {
 		utils.FailWithMessage("wrong action.", c)
