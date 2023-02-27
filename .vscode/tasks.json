@@ -59,9 +59,9 @@
           "CGO_ENABLED": "1",
           "GOOS": "linux",
           "GOARCH": "arm",
-          "CC": "arm-none-linux-gnueabihf-gcc",
-          "CXX": "arm-none-linux-gnueabihf-gcc",
-          "AR": "arm-none-linux-gnueabihf-ar"
+          "CC": "arm-linux-gnueabihf-gcc",
+          "CXX": "arm-linux-gnueabihf-gcc",
+          "AR": "arm-linux-gnueabihf-ar"
         }
       },
       "command": "go",
