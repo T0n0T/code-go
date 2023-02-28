@@ -108,14 +108,22 @@ func lora_init() {
 	C.init_lora_para()
 	C.read_lora_para_file()
 
-	fmt.Println(unsafe.Sizeof(C.g_LoraRec))
-	fmt.Printf("%X\n", C.Head)
-	fmt.Printf("%X\n", C.g_LoraRec)
+	// fmt.Printf("%X\n", C.Head)
+	data, _ := StructToBin(C.Head)
+	fmt.Println(data)
+	// fmt.Printf("%X\n", C.g_LoraRec)
 }
 
 func BinToStruct(data []byte, v any) (err error) {
 	buf := bytes.NewReader(data)
 	err = binary.Read(buf, binary.LittleEndian, v)
+	return
+}
+
+func StructToBin(v any) (data []byte, err error) {
+	buf := &bytes.Buffer{}
+	err = binary.Write(buf, binary.LittleEndian, v)
+	data = buf.Bytes()
 	return
 }
 
@@ -136,11 +144,10 @@ func main() {
 		fmt.Println("read lora para file failed")
 		return
 	}
+	fmt.Println(data_head)
 
-	// buf := bytes.NewReader(data_head)
-	// binary.Read(buf, binary.LittleEndian, &head)
 	BinToStruct(data_head, &head)
-	fmt.Printf("%X\n", head)
+	// fmt.Printf("%X\n", head)
 	// fmt.Printf("%X\n", head.PointsNum)
 
 	data_rec := make([]byte, unsafe.Sizeof(rec))
@@ -152,7 +159,7 @@ func main() {
 	fmt.Println(num)
 
 	BinToStruct(data_rec, &rec)
-	fmt.Printf("%X\n", rec)
+	// fmt.Printf("%X\n", rec)
 	// fmt.Printf("%X\n", rec.NRes1)
 
 }
