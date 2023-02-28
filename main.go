@@ -1,6 +1,6 @@
 package main
 
-//#include <../c/source.h>
+//#include <./c/source.h>
 //
 // DX_FILE_HEAD Head;
 // LORA_REC g_LoraRec;
@@ -30,7 +30,7 @@ package main
 //          int nResult = 0;
 //          char szFileName[256];
 //          // sprintf(szFileName,"%s/dx/%s",A40I_CCU_CONF_HBDX, DX_LORA_FILENAME);
-//          sprintf(szFileName, "%s", "/home/tiger/Desktop/code/vscode/demo/c/lorapara.dat");
+//          sprintf(szFileName, "%s", "/home/tiger/Desktop/code/go-c-struct/c/lorapara.dat");
 //          char *szFile = szFileName;
 //          FILE *fp = fopen(szFile, "rb");
 //          if (!fp)
@@ -65,7 +65,7 @@ package main
 import "C"
 import (
 	"bytes"
-	"encoding/gob"
+	"encoding/binary"
 	"fmt"
 	"os"
 	"unsafe"
@@ -108,43 +108,51 @@ func lora_init() {
 	C.init_lora_para()
 	C.read_lora_para_file()
 
-	head := C.Head
-	// rec := C.g_LoraRec
+	fmt.Println(unsafe.Sizeof(C.g_LoraRec))
+	fmt.Printf("%X\n", C.Head)
+	fmt.Printf("%X\n", C.g_LoraRec)
+}
 
-	fmt.Printf("%X\n", head)
-	// fmt.Printf("%X\n", rec)
+func BinToStruct(data []byte, v any) (err error) {
+	buf := bytes.NewReader(data)
+	err = binary.Read(buf, binary.LittleEndian, v)
+	return
 }
 
 func main() {
 	lora_init()
-	file, err := os.Open("/home/tiger/Desktop/code/vscode/demo/c/lorapara.dat")
+
+	fmt.Println("---------------------------------")
+
+	file, err := os.Open("/home/tiger/Desktop/code/go-c-struct/c/lorapara.dat")
 	if err != nil {
 		fmt.Println("open lora para file failed")
 		return
 	}
 
 	data_head := make([]byte, unsafe.Sizeof(head))
-	_, err = file.Read(data_head)
+	num, err := file.Read(data_head)
 	if err != nil {
 		fmt.Println("read lora para file failed")
 		return
 	}
-	buf := new(bytes.Buffer)
-	buf.Write(data_head)
 
-	fmt.Printf("%X\n", buf.Bytes())
-	if err = gob.NewDecoder(buf).Decode(&head); err != nil {
-		fmt.Println("failed")
+	// buf := bytes.NewReader(data_head)
+	// binary.Read(buf, binary.LittleEndian, &head)
+	BinToStruct(data_head, &head)
+	fmt.Printf("%X\n", head)
+	// fmt.Printf("%X\n", head.PointsNum)
+
+	data_rec := make([]byte, unsafe.Sizeof(rec))
+	num, err = file.ReadAt(data_rec, int64(num))
+	if err != nil {
+		fmt.Println("read lora para file failed")
+		return
 	}
-	// fmt.Printf("%X\n", head)
+	fmt.Println(num)
 
-	// data_rec := make([]byte, unsafe.Sizeof(rec))
-	// _, err = file.ReadAt(data_rec, int64(num))
-
-	// if err != nil {
-	// 	fmt.Println("read lora para file failed")
-	// 	return
-	// }
-	// fmt.Printf("%X\n", data_head)
+	BinToStruct(data_rec, &rec)
+	fmt.Printf("%X\n", rec)
+	// fmt.Printf("%X\n", rec.NRes1)
 
 }
