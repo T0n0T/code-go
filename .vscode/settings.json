@@ -1,0 +1,30 @@
+{
+    "MicroPython.executeButton": [
+        {
+            "text": "▶",
+            "tooltip": "运行",
+            "alignment": "left",
+            "command": "extension.executeFile",
+            "priority": 3.5
+        }
+    ],
+    "MicroPython.syncButton": [
+        {
+            "text": "$(sync)",
+            "tooltip": "同步",
+            "alignment": "left",
+            "command": "extension.execute",
+            "priority": 4
+        }
+    ],
+    "code-runner.runInTerminal": true,
+    "files.associations": {
+        "*.cpp": "cpp",
+        "*.html": "html",
+        "hbdxrwparafile.h": "c",
+        "hbdxparastruct.h": "c",
+        "source.h": "c",
+        "string.h": "c",
+        "stdio.h": "c"
+    }
+}
