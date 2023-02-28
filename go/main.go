@@ -64,6 +64,8 @@ package main
 //  }
 import "C"
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"os"
 	"unsafe"
@@ -106,10 +108,11 @@ func lora_init() {
 	C.init_lora_para()
 	C.read_lora_para_file()
 
-	// head := C.Head
-	rec := C.g_LoraRec
-	// fmt.Printf("%X\n", head)
-	fmt.Printf("%X\n", rec)
+	head := C.Head
+	// rec := C.g_LoraRec
+
+	fmt.Printf("%X\n", head)
+	// fmt.Printf("%X\n", rec)
 }
 
 func main() {
@@ -119,21 +122,27 @@ func main() {
 		fmt.Println("open lora para file failed")
 		return
 	}
-
+	buf := new(bytes.Buffer)
 	data_head := make([]byte, unsafe.Sizeof(head))
-	num, err := file.Read(data_head)
+	_, err = file.Read(data_head)
 	if err != nil {
 		fmt.Println("read lora para file failed")
 		return
 	}
-	data_rec := make([]byte, unsafe.Sizeof(rec))
-	_, err = file.ReadAt(data_rec, int64(num))
-	copy(rec, data_rec)
+	copy(buf.Bytes(), data_head)
 
-	if err != nil {
-		fmt.Println("read lora para file failed")
-		return
+	if err = gob.NewDecoder(buf).Decode(&head); err != nil {
+		fmt.Println("failed")
 	}
-	fmt.Printf("%X\n", data_rec)
+	fmt.Printf("%X\n", head)
+
+	// data_rec := make([]byte, unsafe.Sizeof(rec))
+	// _, err = file.ReadAt(data_rec, int64(num))
+
+	// if err != nil {
+	// 	fmt.Println("read lora para file failed")
+	// 	return
+	// }
+	fmt.Printf("%X\n", data_head)
 
 }
