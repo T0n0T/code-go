@@ -122,19 +122,21 @@ func main() {
 		fmt.Println("open lora para file failed")
 		return
 	}
-	buf := new(bytes.Buffer)
+
 	data_head := make([]byte, unsafe.Sizeof(head))
 	_, err = file.Read(data_head)
 	if err != nil {
 		fmt.Println("read lora para file failed")
 		return
 	}
-	copy(buf.Bytes(), data_head)
+	buf := new(bytes.Buffer)
+	buf.Write(data_head)
 
+	fmt.Printf("%X\n", buf.Bytes())
 	if err = gob.NewDecoder(buf).Decode(&head); err != nil {
 		fmt.Println("failed")
 	}
-	fmt.Printf("%X\n", head)
+	// fmt.Printf("%X\n", head)
 
 	// data_rec := make([]byte, unsafe.Sizeof(rec))
 	// _, err = file.ReadAt(data_rec, int64(num))
@@ -143,6 +145,6 @@ func main() {
 	// 	fmt.Println("read lora para file failed")
 	// 	return
 	// }
-	fmt.Printf("%X\n", data_head)
+	// fmt.Printf("%X\n", data_head)
 
 }
