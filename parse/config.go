@@ -3,6 +3,7 @@ package parse
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"unsafe"
 )
@@ -61,7 +62,23 @@ func (c *Config) parseConfigRec(num int, file *os.File) (err error) {
 		err = errors.New("read " + c.Kind + " rec failed, loss bytes")
 		return
 	}
-	err = BinToStruct(data_rec, &c.Rec)
+	switch c.Rec.(type) {
+	case *LORA_REC:
+		p := c.Rec.(*LORA_REC)
+		err = BinToStruct(data_rec, p)
+		if err != nil {
+			fmt.Println("111")
+			return
+		}
+		fmt.Println("p:", p)
+		c.Rec = p
+	default:
+		err = errors.New("没有匹配的配置模式")
+		if err != nil {
+			return
+		}
+	}
+
 	return
 }
 

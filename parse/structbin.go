@@ -4,22 +4,18 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/gob"
-	"fmt"
-	"log"
 )
 
 func GoBinToStruct(data []byte, v any) (err error) {
 	buf := bytes.NewReader(data)
-	if err := gob.NewDecoder(buf).Decode(v); err != nil {
-		log.Fatal("decode error:", err)
-	}
+	err = gob.NewDecoder(buf).Decode(v)
 	return
 }
 
 func GoStructToBin(v any) (data []byte, err error) {
 	var buf bytes.Buffer
 	if err = gob.NewEncoder(&buf).Encode(v); err != nil {
-		log.Fatal("encode error:", err)
+		return
 	}
 	data = buf.Bytes()
 	return
@@ -27,16 +23,14 @@ func GoStructToBin(v any) (data []byte, err error) {
 
 func BinToStruct(data []byte, v any) (err error) {
 	buf := bytes.NewReader(data)
-	if err = binary.Read(buf, binary.LittleEndian, v); err != nil {
-		fmt.Println(err)
-	}
+	err = binary.Read(buf, binary.LittleEndian, v)
+
 	return
 }
 
 func StructToBin(v any) (data []byte, err error) {
 	buf := &bytes.Buffer{}
 	if err = binary.Write(buf, binary.LittleEndian, v); err != nil {
-		fmt.Println(err)
 		return
 	}
 	data = buf.Bytes()

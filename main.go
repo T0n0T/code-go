@@ -68,25 +68,24 @@ import (
 	"readfile/parse"
 )
 
-var (
-	head parse.DX_FILD_HEAD
-	rec  parse.LORA_REC
-)
-
 func lora_init() {
 	C.init_lora_para()
 	C.read_lora_para_file()
 
-	fmt.Printf("%X\n", C.Head)
-	fmt.Printf("%X\n", C.g_LoraRec)
+	// fmt.Printf("%X\n", C.Head)
+	// fmt.Printf("%X\n", C.g_LoraRec)
 }
 
 func main() {
 	lora_init()
 
 	fmt.Println("---------------------------------")
-	test := parse.Config{Path: "./c/lorapara.dat", Rec: parse.LORA_REC{}}
-	test.ReadConfig()
+	test := parse.Config{Path: "./c/lorapara.dat", Rec: &parse.LORA_REC{}}
+
+	err := test.ReadConfig()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 	fmt.Println(test.Rec)
 	test.WriterConfig()
 
