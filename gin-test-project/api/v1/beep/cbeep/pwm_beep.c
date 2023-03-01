@@ -1,13 +1,13 @@
 #include<stdint.h>
 #include<string.h>
 #include<fcntl.h>
-#include<unistd.h>
+// #include<unistd.h>
 #include<stdio.h>
 #include<linux/input.h>
-#include <getopt.h>
-#include <linux/types.h>
-#include <stdlib.h>
-#include <sys/ioctl.h>
+// #include <getopt.h>
+// #include <linux/types.h>
+// #include <stdlib.h>
+// #include <sys/ioctl.h>
 #include "cbeep.h"
 
 static char *device = "/dev/input/event0";
@@ -96,11 +96,14 @@ int beep_action(uint32_t action)
 }
 
 
-// int main(int argc, char const *argv[])
-// {
-//     beep_action(0);
-//     return 0;
-// }
+int main(int argc, char const *argv[])
+{
+    struct input_event event;
+    event.type = EV_SND;
+    event.value = 0;
+    // printf("%x\n", event);
+    return 0;
+}
 
 // int main(int argc, char *argv[])
 // {

@@ -3,8 +3,12 @@ package main
 import (
 	"fmt"
 	"sync"
+	"syscall"
 	"test/device/gpio"
+	"test/device/ioctl"
+	"test/device/spi"
 	"time"
+	"unsafe"
 )
 
 var wg sync.WaitGroup
@@ -44,31 +48,33 @@ func LED_PC14() {
 	//wg.Done()
 }
 
+const DEVICE string = "/dev/spidev0.0" /* 设备文件*/
+
+var fd int
+var err error
+
 func main() {
-
-	gpio.GpioMapInit() //初始化IO映射表
-
-	gpio.InitGpio("PA8")
-	gpio.SetGpioDirection("PA8", "out")
-
-	gpio.InitGpio("PC13")
-	gpio.SetGpioDirection("PC13", "out")
-
-	gpio.InitGpio("PC14")
-	gpio.SetGpioDirection("PC14", "out")
-
-	wg.Add(1)
-	Bee_PA8()
-
-	wg.Add(1)
-	go LED_PC13()
-
-	wg.Add(1)
-	go LED_PC14()
-
-	wg.Wait()
-	fmt.Println("进程退出")
-
+	//参数：文件路径，打开方式，打开模式（权限）
+	fd, err = syscall.Open(DEVICE, syscall.O_RDWR, 0777)
+	if err != nil {
+		fmt.Printf("device open failed\r\n")
+		syscall.Close(fd)
+		fmt.Println(fd, err)
+	} else {
+		speed := 8192000
+		//参数：文件描述符，命令，数据
+		err = ioctl.IOCTL(uintptr(fd), spi.SPI_IOC_WR_MAX_SPEED_HZ(), uintptr(unsafe.Pointer(&speed))) /*设置SPI时钟频率*/
+		if err != nil {
+			fmt.Printf("can't set spi speed\r\n")
+			syscall.Close(fd)
+		} else {
+			var filedata = make([]byte, 64)
+			len, _ := syscall.Read(fd, filedata)
+			if len > 0 {
+				fmt.Printf("filedata: %v\n", filedata)
+			}
+		}
+	}
 }
 
 // func main() {
