@@ -51,31 +51,85 @@ func (c *Config) checkConfigHead(file *os.File) (num int, err error) {
 	return
 }
 
-func (c *Config) parseConfigRec(num int, file *os.File) (err error) {
-	data_rec := make([]byte, unsafe.Sizeof(c.Rec))
+func (c *Config) recParse(file *os.File, length int, num int) (data_rec []byte, err error) {
+	data_rec = make([]byte, length)
+
 	num, err = file.ReadAt(data_rec, int64(num))
 	if err != nil {
 		err = errors.New("read " + c.Kind + " rec failed")
 		return
 	}
-	if num != int(unsafe.Sizeof(c.Rec)) {
+	if num != length {
 		err = errors.New("read " + c.Kind + " rec failed, loss bytes")
 		return
 	}
-	switch c.Rec.(type) {
-	case *LORA_REC:
-		p := c.Rec.(*LORA_REC)
-		err = BinToStruct(data_rec, p)
+
+	return data_rec, nil
+}
+
+func (c *Config) parseConfigRec(num int, file *os.File) (err error) {
+	switch c.Kind {
+	case "LORA_REC":
+		p := LORA_REC{}
+		data_rec, err := c.recParse(file, int(unsafe.Sizeof(p)), num)
 		if err != nil {
-			fmt.Println("111")
-			return
+			fmt.Println(err.Error())
+			break
 		}
-		fmt.Println("p:", p)
+		err = BinToStruct(data_rec, &p)
+		if err != nil {
+			break
+		}
+
+		c.Rec = p
+	case "DXK_REC":
+		p := DXK_REC{}
+		data_rec, err := c.recParse(file, int(unsafe.Sizeof(p)), num)
+		if err != nil {
+			break
+		}
+		err = BinToStruct(data_rec, &p)
+		if err != nil {
+			break
+		}
+		c.Rec = p
+	case "JDX_REC":
+		p := JDX_REC{}
+		data_rec, err := c.recParse(file, int(unsafe.Sizeof(p)), num)
+		if err != nil {
+			break
+		}
+		err = BinToStruct(data_rec, &p)
+		if err != nil {
+			break
+		}
+		c.Rec = p
+	case "DXZREC":
+		p := DXZREC{}
+		data_rec, err := c.recParse(file, int(unsafe.Sizeof(p)), num)
+		if err != nil {
+			break
+		}
+		err = BinToStruct(data_rec, &p)
+		if err != nil {
+			break
+		}
+		c.Rec = p
+	case "MQTTCLIENT_REC":
+		p := MQTTCLIENT_REC{}
+		data_rec, err := c.recParse(file, int(unsafe.Sizeof(p)), num)
+		if err != nil {
+			break
+		}
+		err = BinToStruct(data_rec, &p)
+		if err != nil {
+			break
+		}
 		c.Rec = p
 	default:
 		err = errors.New("没有匹配的配置模式")
 		if err != nil {
-			return
+			break
 		}
 	}
 

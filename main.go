@@ -80,13 +80,12 @@ func main() {
 	lora_init()
 
 	fmt.Println("---------------------------------")
-	test := parse.Config{Path: "./c/lorapara.dat", Rec: &parse.LORA_REC{}}
+	test := parse.Config{Path: "./c/lorapara.dat", Kind: "LORA_REC"}
 
 	err := test.ReadConfig()
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Println(test.Rec)
 	test.WriterConfig()
 
 }
