@@ -105,40 +105,40 @@ int main(int argc, char const *argv[])
     return 0;
 }
 
-// int main(int argc, char *argv[])
-// {
-    // return beep_action(0);
-    // int fd, ret;
-    // struct input_event event;
+int main(int argc, char *argv[])
+{
+    return beep_action(0);
+    int fd, ret;
+    struct input_event event;
 
-    // printf( "beep test begin ====================================================\n" );
+    printf( "beep test begin ====================================================\n" );
 
-    // parse_opts( argc, argv );
+    parse_opts( argc, argv );
 
-    // if (( fd = open( device, O_RDWR ) ) < 0) {
-    //     perror("beep test wrong");
-    //     return 1;
-    // }
+    if (( fd = open( device, O_RDWR ) ) < 0) {
+        perror("beep test wrong");
+        return 1;
+    }
 
-    // event.type = EV_SND;
+    event.type = EV_SND;
 
-    // if ( type == 0 ){
-    //     event.code = SND_BELL;
-    //     event.value = period;
-    //     ret = write(fd, &event, sizeof(struct input_event));
-    //     sleep( 3 );
-    //     event.value = 0;
-    //     ret = write(fd, &event, sizeof(struct input_event));
+    if ( type == 0 ){
+        event.code = SND_BELL;
+        event.value = period;
+        ret = write(fd, &event, sizeof(struct input_event));
+        sleep( 3 );
+        event.value = 0;
+        ret = write(fd, &event, sizeof(struct input_event));
         
-    // }else if ( type == 1 ){
-    //     event.code = SND_TONE;
-    //     event.value = period;
-    //     ret = write( fd, &event, sizeof( struct input_event ) );
-    //     sleep( 3 );
-    //     event.value = 0;
-    //     ret = write( fd, &event, sizeof( struct input_event ) );
-    // }
+    }else if ( type == 1 ){
+        event.code = SND_TONE;
+        event.value = period;
+        ret = write( fd, &event, sizeof( struct input_event ) );
+        sleep( 3 );
+        event.value = 0;
+        ret = write( fd, &event, sizeof( struct input_event ) );
+    }
 
-    // close( fd );
-    // printf("beep test end ======================================================\n");
-// }
+    close( fd );
+    printf("beep test end ======================================================\n");
+}
