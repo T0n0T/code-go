@@ -81,11 +81,18 @@ func main() {
 
 	fmt.Println("---------------------------------")
 	test := parse.Config{Path: "./c/lorapara.dat", Kind: "LORA_REC"}
+	test2 := parse.CreateConfig("LORA_REC")
+	test2.Path = "./c/lorapara2.dat"
 
 	err := test.ReadConfig()
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	test.WriterConfig()
+
+	test2.Rec = test.Rec
+	test2.WriterConfig()
+
+	fmt.Println(test2)
+	// test.WriterConfig()
 
 }

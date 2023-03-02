@@ -1,6 +1,12 @@
 package parse
 
 // generate from .c NOT EDIT!
+
+const (
+	DX_FILE_CODE  = 0xE1E2E3E4 //文件起始特征码
+	DX_FILE_DBVER = 0x01000001 //文件版本
+)
+
 type DX_FILD_HEAD struct {
 	StartCode   uint32
 	DbFileVison uint32
@@ -60,7 +66,7 @@ type JDX_REC struct {
 	BszDisplayNo [64]int8
 }
 
-type DXZREC struct {
+type DXZ_REC struct {
 	PointNo          int32
 	Rfid             [8]uint8
 	GroundPileWireNo [64]int8

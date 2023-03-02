@@ -80,7 +80,6 @@ func (c *Config) parseConfigRec(num int, file *os.File) (err error) {
 		if err != nil {
 			break
 		}
-
 		c.Rec = p
 	case "DXK_REC":
 		p := DXK_REC{}
@@ -104,8 +103,8 @@ func (c *Config) parseConfigRec(num int, file *os.File) (err error) {
 			break
 		}
 		c.Rec = p
-	case "DXZREC":
-		p := DXZREC{}
+	case "DXZ_REC":
+		p := DXZ_REC{}
 		data_rec, err := c.recParse(file, int(unsafe.Sizeof(p)), num)
 		if err != nil {
 			break
@@ -128,9 +127,9 @@ func (c *Config) parseConfigRec(num int, file *os.File) (err error) {
 		c.Rec = p
 	default:
 		err = errors.New("没有匹配的配置模式")
-		if err != nil {
-			break
-		}
+		// if err != nil {
+		// 	break
+		// }
 	}
 
 	return
@@ -150,7 +149,7 @@ func (c *Config) BitsConfig() (data []byte, err error) {
 }
 
 func (c *Config) WriterConfig() (err error) {
-	file, err := os.Create("./sss.dat")
+	file, err := os.Create(c.Path)
 	if err != nil {
 		err = errors.New("create " + c.Kind + " para file failed")
 		return
@@ -177,5 +176,26 @@ func (c *Config) ReadConfig() (err error) {
 		return
 	}
 
+	return
+}
+
+func CreateConfig(kind string) (c Config) {
+	c.Head.StartCode = DX_FILE_CODE
+	c.Head.DbFileVison = DX_FILE_DBVER
+	c.Kind = kind
+	switch c.Kind {
+	case "LORA_REC":
+		c.Rec = LORA_REC{}
+	case "DXK_REC":
+		c.Rec = DXK_REC{}
+	case "JDX_REC":
+		c.Rec = JDX_REC{}
+	case "DXZ_REC":
+		c.Rec = DXZ_REC{}
+	case "MQTTCLIENT_REC":
+		c.Rec = MQTTCLIENT_REC{}
+	default:
+		fmt.Println("没有匹配的配置模式")
+	}
 	return
 }
