@@ -1,28 +1,36 @@
 package cbeep
 
 /*
-#include "cbeep.h"
+#include <linux/input.h>
 */
 import "C"
 import (
 	"fmt"
 	"os"
+	"syscall"
+	"test/utils"
 )
 
-func BeepOn() {
-	C.beep_action(C.uint32_t(0))
-}
+func BeepAct(action uint32) {
 
-func BeepOff() {
-	C.beep_action(C.uint32_t(1))
-}
-
-func BeepAct(action string) {
-	file, err := os.OpenFile("/sys/class/leds/beep", os.O_RDWR, 0777)
+	file, err := os.OpenFile("/dev/input/event0", os.O_RDWR, 0777)
 	if err != nil {
 		fmt.Println("open file failed, err:", err)
 		return
 	}
 	defer file.Close()
-	file.WriteString(action)
+
+	event := C.struct_input_event{_type: C.EV_SND}
+	if action == 0 {
+		event.code = C.SND_BELL
+		event.value = 1000
+		data, _ := utils.StructToBin(event)
+		file.Write(data)
+	} else if action == 1 {
+		event.code = C.SND_BELL
+		event.value = 0
+		data, _ := utils.StructToBin(event)
+		file.Write(data)
+	}
+
 }

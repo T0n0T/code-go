@@ -4,18 +4,15 @@ import (
 	"log"
 	"time"
 
-	"test/gin-test-project/utils"
-
 	"github.com/gin-gonic/gin"
 	"github.com/olahol/melody"
-	serial "github.com/tarm/goserial"
 )
 
 func main() {
 	r := gin.Default()
 
-	cfg := &serial.Config{Name: "COM7", Baud: 115200, ReadTimeout: 3 /*毫秒*/}
-	utils.OpenSerial(cfg)
+	// cfg := &serial.Config{Name: "/dev/tty0", Baud: 115200, ReadTimeout: 3 /*毫秒*/}
+	// utils.OpenSerial(cfg)
 	m := melody.New()
 	r.GET("/ws", func(c *gin.Context) {
 		m.HandleRequest(c.Writer, c.Request)

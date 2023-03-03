@@ -5,10 +5,12 @@ go 1.19
 require gorm.io/gorm v1.24.5
 
 require (
+	github.com/creack/goselect v0.1.2 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/olahol/melody v1.1.1 // indirect
 	github.com/tarm/goserial v0.0.0-20151007205400-b3440c3c6355 // indirect
+	go.bug.st/serial v1.5.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 )
@@ -36,7 +38,7 @@ require (
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3 // indirect
 	golang.org/x/net v0.4.0 // indirect
-	golang.org/x/sys v0.3.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.5.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

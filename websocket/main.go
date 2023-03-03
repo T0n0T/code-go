@@ -22,7 +22,7 @@ var upgrader = websocket.Upgrader{
 func main() {
 	engine := gin.Default()
 
-	c := &serial.Config{Name: "COM9", Baud: 115200}
+	c := &serial.Config{Name: "/dev/ttyCH9344USB1", Baud: 115200}
 	s, err := serial.OpenPort(c)
 	if err != nil {
 		log.Fatal(err)
@@ -51,10 +51,11 @@ func main() {
 						break
 					}
 				}
-				err := client.WriteMessage(websocket.TextMessage, []byte(tmpstr))
-				if err != nil {
-					log.Println(err)
-				}
+
+				client.WriteMessage(websocket.TextMessage, []byte(tmpstr))
+				_, a, _ := client.ReadMessage()
+				s.Write(a)
+
 				time.Sleep(1 * time.Second)
 			}
 
