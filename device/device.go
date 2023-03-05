@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"sync"
-	"syscall"
 	"test/device/gpio"
-	"test/device/ioctl"
-	"test/device/spi"
 	"time"
-	"unsafe"
+
+	"go.bug.st/serial"
 )
 
 var wg sync.WaitGroup
@@ -53,29 +52,29 @@ const DEVICE string = "/dev/spidev0.0" /* 设备文件*/
 var fd int
 var err error
 
-func main() {
-	//参数：文件路径，打开方式，打开模式（权限）
-	fd, err = syscall.Open(DEVICE, syscall.O_RDWR, 0777)
-	if err != nil {
-		fmt.Printf("device open failed\r\n")
-		syscall.Close(fd)
-		fmt.Println(fd, err)
-	} else {
-		speed := 8192000
-		//参数：文件描述符，命令，数据
-		err = ioctl.IOCTL(uintptr(fd), spi.SPI_IOC_WR_MAX_SPEED_HZ(), uintptr(unsafe.Pointer(&speed))) /*设置SPI时钟频率*/
-		if err != nil {
-			fmt.Printf("can't set spi speed\r\n")
-			syscall.Close(fd)
-		} else {
-			var filedata = make([]byte, 64)
-			len, _ := syscall.Read(fd, filedata)
-			if len > 0 {
-				fmt.Printf("filedata: %v\n", filedata)
-			}
-		}
-	}
-}
+// func main() {
+// 	//参数：文件路径，打开方式，打开模式（权限）
+// 	fd, err = syscall.Open(DEVICE, syscall.O_RDWR, 0777)
+// 	if err != nil {
+// 		fmt.Printf("device open failed\r\n")
+// 		syscall.Close(fd)
+// 		fmt.Println(fd, err)
+// 	} else {
+// 		speed := 8192000
+// 		//参数：文件描述符，命令，数据
+// 		err = ioctl.IOCTL(uintptr(fd), spi.SPI_IOC_WR_MAX_SPEED_HZ(), uintptr(unsafe.Pointer(&speed))) /*设置SPI时钟频率*/
+// 		if err != nil {
+// 			fmt.Printf("can't set spi speed\r\n")
+// 			syscall.Close(fd)
+// 		} else {
+// 			var filedata = make([]byte, 64)
+// 			len, _ := syscall.Read(fd, filedata)
+// 			if len > 0 {
+// 				fmt.Printf("filedata: %v\n", filedata)
+// 			}
+// 		}
+// 	}
+// }
 
 // func main() {
 // 	for _, url := range os.Args[1:] {
@@ -93,3 +92,34 @@ func main() {
 // 		fmt.Printf("%s", b)
 // 	}
 // }
+
+func main() {
+	Dev_mode := serial.Mode{BaudRate: 115200}
+	tty, _ := serial.Open("/dev/ttyUSB0", &Dev_mode)
+
+	go func() {
+		for {
+			n, err := tty.Write([]byte("jianggoujianggoujianggou\n\rsssss11111\n\r"))
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("Sent %v bytes\n", n)
+		}
+
+	}()
+
+	buff := make([]byte, 100)
+	for {
+		n, err := tty.Read(buff)
+		if err != nil {
+			log.Fatal(err)
+			break
+		}
+		if n == 0 {
+			fmt.Println("\nEOF")
+			break
+		}
+		fmt.Printf("%v", string(buff[:n]))
+	}
+
+}

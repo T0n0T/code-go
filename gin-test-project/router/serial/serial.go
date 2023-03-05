@@ -9,11 +9,12 @@ import (
 type SerialRouter struct {
 }
 
-func (*SerialRouter) SerialRouterInit(router *gin.Engine) {
+func (s *SerialRouter) SerialRouterInit(router *gin.Engine) {
 	api := v1.ApiEnter.SerialApi
 	r := router.Group("serial")
 	{
 		r.GET("getlist", api.SerialGetList)
-		r.GET("ws", api.SerialAction)
+		r.POST("set", api.SerialSet)
+		r.GET("ws", api.SerialOpen)
 	}
 }

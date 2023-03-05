@@ -7,7 +7,6 @@ import "C"
 import (
 	"fmt"
 	"os"
-	"syscall"
 	"test/utils"
 )
 

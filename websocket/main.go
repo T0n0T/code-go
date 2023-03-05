@@ -1,10 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -22,7 +22,7 @@ var upgrader = websocket.Upgrader{
 func main() {
 	engine := gin.Default()
 
-	c := &serial.Config{Name: "/dev/ttyCH9344USB1", Baud: 115200}
+	c := &serial.Config{Name: "/dev/ttyUSB0", Baud: 115200}
 	s, err := serial.OpenPort(c)
 	if err != nil {
 		log.Fatal(err)
@@ -30,12 +30,29 @@ func main() {
 
 	buf := make([]byte, 128)
 
-	serialstring := make(chan string)
+	conn := make(chan *websocket.Conn)
+
+	go func(ch chan *websocket.Conn) {
+		var client *websocket.Conn
+		for {
+			select {
+			case client = <-conn:
+			default:
+				fmt.Println("no client")
+			}
+			if client != nil {
+				_, a, _ := client.ReadMessage()
+				s.Write(a)
+			}
+
+		}
+	}(conn)
 
 	engine.GET("/ws", func(c *gin.Context) {
 		// 将普通的http GET请求升级为websocket请求
 		client, _ := upgrader.Upgrade(c.Writer, c.Request, nil)
-		go func(ch chan string) {
+		conn <- client
+		go func() {
 
 			for {
 				var tmpstr string = ""
@@ -51,19 +68,12 @@ func main() {
 						break
 					}
 				}
-
 				client.WriteMessage(websocket.TextMessage, []byte(tmpstr))
-				_, a, _ := client.ReadMessage()
-				s.Write(a)
-
-				time.Sleep(1 * time.Second)
 			}
 
-		}(serialstring)
+		}()
 	})
 
 	engine.Run(":8080")
-	if err != nil {
-		log.Fatalln(err)
-	}
+
 }
