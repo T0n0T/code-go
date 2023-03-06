@@ -2,6 +2,7 @@ package serial
 
 import (
 	"fmt"
+	"strings"
 	"test/gin-test-project/model"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +11,7 @@ import (
 )
 
 const (
-	Dev_name = "/dev/ttyUSB0"
+	Dev_name = "/dev/ttyCH9344USB1"
 )
 
 var Dev_mode = goserial.Mode{BaudRate: 115200}
@@ -25,6 +26,7 @@ type SerialService struct {
 
 func (s *SerialService) ReadSerial(ss *melody.Session, sign chan string) {
 	buf := make([]byte, 512)
+	var tmpstr string
 	var status string
 Loop:
 	for {
@@ -34,18 +36,21 @@ Loop:
 				break Loop
 			}
 		default:
+			tmpstr = ""
 			for {
-				n, err := s.tty.Read(buf)
-				if err != nil {
-					ss.Write([]byte("串口故障..."))
-					break
-				}
-				if n == 0 {
+				num, _ := s.tty.Read(buf)
+				if num > 0 {
+					tmpstr += string(buf[:num])
+				} else if num == 0 {
 					ss.Write([]byte("\r\nEOF"))
 					break
 				}
-				ss.Write(buf[:n])
+				//查找读到信息的结尾标志
+				if strings.Index(tmpstr, "\n") > 0 {
+					break
+				}
 			}
+			ss.Write([]byte(tmpstr))
 		}
 	}
 	ss.Write([]byte(s.Port_num + "close\n"))

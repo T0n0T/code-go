@@ -19,6 +19,7 @@ func main() {
 	utils.PROJ_DB.DB, _ = utils.PROJ_DB.InitSql(cfg)
 
 	GinSTART(cfg)
+	
 
 }
 

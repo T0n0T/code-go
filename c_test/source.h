@@ -1,1 +1,0 @@
-void beep_action(int i);
