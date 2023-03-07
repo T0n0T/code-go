@@ -1,6 +1,7 @@
 package serv
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -37,17 +38,12 @@ Loop:
 }
 
 func (c *CanServ) canSend(ss *melody.Session, msg []byte) {
-	sendsck, _ := canbus.New()
-	defer sendsck.Close()
-	sendsck.Bind("can0")
-	sendsck.Send(canbus.Frame{ID: 0x78, Data: msg, Kind: canbus.SFF})
-	fmt.Println(string(msg))
+	c.SendFrame.Data = msg
+	c.Sck.Send(*c.SendFrame)
+	fmt.Println(c.SendFrame)
 }
 
 func (c *CanServ) opencan(ss *melody.Session) {
-	c.Sck, _ = canbus.New()
-
-	c.Sck.Bind("can1")
 	ss.Write([]byte(c.Can_dev + " open...\n"))
 	go c.canRecv(ss)
 }
@@ -60,15 +56,21 @@ func (c *CanServ) closecan(ss *melody.Session) {
 	}
 }
 
-func (c *CanServ) OpenServ(ctx *gin.Context) {
+func (c *CanServ) OpenServ(Dev_name string, ctx *gin.Context) (err error) {
 	c.Melody = melody.New()
-	// if c.SendFrame == nil {
-	// 	c.SendFrame = &FrameDefault
-	// }
+	if c.SendFrame == nil {
+		c.SendFrame = &FrameDefault
+	}
+	c.Sck, err = canbus.New()
+	if err != nil {
+		err = errors.New(Dev_name + "创建失败")
+	}
+	c.Sck.Bind(Dev_name)
 	c.Melody.HandleMessage(c.canSend)
 	c.Melody.HandleConnect(c.opencan)
 	c.Melody.HandleDisconnect(c.closecan)
 	c.Melody.HandleRequest(ctx.Writer, ctx.Request)
+	return
 }
 
 func (c *CanServ) CanSetFrame(Frame canbus.Frame) {

@@ -33,6 +33,29 @@
             
             "program": "${fileDirname}",
             "preLaunchTask": "go:linux交叉编译"
+        },
+        {
+            "name": "gdb-arm",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${file}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "internalConsoleOptions": "neverOpen",
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "arm-linux-gnueabihf-gdb",
+            "miDebuggerServerAddress": "192.168.1.101:12345", //remote gdb with gdbserver
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": false
+                }
+            ],
+            //"preLaunchTask": "Compile"
         }
     ]
 }
