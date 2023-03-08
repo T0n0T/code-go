@@ -429,7 +429,7 @@ int main(int argc, char **argv)
     signal(SIGINT, SignHandler);
     dev = argv[1];
 
-    databit = atoi(argv[3]) if (dev == NULL)
+    if (dev == NULL)
     {
         printf("Please input serial device name ,for exmaple /dev/ttyS2.\n");
         exit(1);

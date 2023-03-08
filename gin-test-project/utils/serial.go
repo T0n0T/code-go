@@ -5,7 +5,7 @@ import (
 	"io"
 	"strings"
 
-	serial "github.com/tarm/goserial"
+	serial "github.com/tarm/serial"
 )
 
 const MAXRWLEN = 8000

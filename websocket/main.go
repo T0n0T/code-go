@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	serial "github.com/tarm/goserial"
+	serial "github.com/tarm/serial"
 )
 
 var upgrader = websocket.Upgrader{
@@ -22,7 +22,7 @@ var upgrader = websocket.Upgrader{
 func main() {
 	engine := gin.Default()
 
-	c := &serial.Config{Name: "/dev/ttyUSB0", Baud: 115200}
+	c := &serial.Config{Name: "/dev/ttyCH9344USB1", Baud: 115200}
 	s, err := serial.OpenPort(c)
 	if err != nil {
 		log.Fatal(err)
@@ -74,6 +74,6 @@ func main() {
 		}()
 	})
 
-	engine.Run(":8080")
+	engine.Run(":8888")
 
 }

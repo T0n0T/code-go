@@ -55,17 +55,16 @@ func main() {
 	r := gin.Default()
 	sign := make(chan string)
 
-	Dev_mode := serial.Mode{BaudRate: 115200}
-	tty, _ := serial.Open("/dev/ttyUSB0", &Dev_mode)
+	Dev_mode := serial.Mode{BaudRate: 115200, DataBits: 8, StopBits: 0}
 
 	r.GET("", func(ctx *gin.Context) {
 		ctx.String(200, "hello")
 	})
 
-	r.GET("/ws", func(c *gin.Context) {
+	r.GET("/serial/ws", func(c *gin.Context) {
 		fmt.Println("一个新的连接")
 		m := melody.New()
-		defer m.Close()
+		tty, _ := serial.Open("/dev/ttyCH9344USB1", &Dev_mode)
 
 		go func(sign chan string) {
 			var status string
@@ -80,18 +79,6 @@ func main() {
 						break Loop
 					}
 				default:
-					// for {
-					// 	n, err := tty.Read(buff)
-					// 	if err != nil {
-					// 		log.Fatal(err)
-					// 		break
-					// 	}
-					// 	if n == 0 {
-					// 		m.Broadcast([]byte("\r\nEOF"))
-					// 		break
-					// 	}
-					// 	m.Broadcast(buff[:n])
-					// }
 					tmpstr = ""
 					for {
 						num, _ := tty.Read(buf)
@@ -111,16 +98,20 @@ func main() {
 		}(sign)
 
 		m.HandleMessage(func(s *melody.Session, b []byte) {
+			m.Broadcast([]byte(b))
 			fmt.Println(string(b))
 			tty.Write(b)
 		})
 		m.HandleDisconnect(func(s *melody.Session) {
+			fmt.Println(string("close........."))
 			tty.Close()
+			fmt.Println(string("close.........2"))
 			sign <- "close"
 		})
 		m.HandleRequest(c.Writer, c.Request)
+		// m.Close()
 	})
 
-	r.Run(":8080")
+	r.Run(":8888")
 
 }
