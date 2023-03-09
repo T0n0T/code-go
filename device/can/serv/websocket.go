@@ -3,6 +3,7 @@ package serv
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-daq/canbus"
@@ -15,7 +16,7 @@ type CanServ struct {
 	Can_dev   string
 	Sck       *canbus.Socket
 	SendFrame *canbus.Frame
-	sign      chan string
+	Sign      chan string
 }
 
 var FrameDefault = canbus.Frame{ID: 0x00, Kind: canbus.SFF}
@@ -24,14 +25,16 @@ func (c *CanServ) canRecv(ss *melody.Session) {
 Loop:
 	for {
 		select {
-		case <-c.sign:
-			if <-c.sign == "close" {
+		case <-c.Sign:
+			if <-c.Sign == "close" {
 				break Loop
 			}
 		default:
+			fmt.Println("等待退出")
+			time.Sleep(500 * time.Millisecond)
 			msg, _ := c.Sck.Recv()
 			ss.Write(msg.Data)
-			fmt.Println(string(msg.Data))
+			fmt.Printf("addr: %p ", c.Sck)
 		}
 	}
 	ss.Write([]byte(c.Can_dev + "close\n"))
@@ -40,6 +43,7 @@ Loop:
 func (c *CanServ) canSend(ss *melody.Session, msg []byte) {
 	c.SendFrame.Data = msg
 	c.Sck.Send(*c.SendFrame)
+	fmt.Printf("addr: %p ", c.Sck)
 	fmt.Println(c.SendFrame)
 }
 
@@ -49,11 +53,8 @@ func (c *CanServ) opencan(ss *melody.Session) {
 }
 
 func (c *CanServ) closecan(ss *melody.Session) {
-	c.sign <- "close"
-	err := c.Sck.Close()
-	if err != nil {
-		return
-	}
+	c.Sign <- "close"
+	defer c.Sck.Close()
 }
 
 func (c *CanServ) OpenServ(Dev_name string, ctx *gin.Context) (err error) {
