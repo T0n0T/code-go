@@ -1,24 +1,17 @@
 package main
 
 import (
-	"fmt"
-	"test/device/can/serv"
+	serv "test/device/can/serv/v2"
 
 	"github.com/gin-gonic/gin"
 )
 
-var api = new(serv.CanServ)
-
 func main() {
 	r := gin.Default()
-	api.Sign = make(chan string)
 
 	r.GET("/can/ws", func(ctx *gin.Context) {
-		fmt.Printf("addr: %p ", api.Sck)
-		err := api.OpenServ("can0", ctx)
-		if err != nil {
-			//回错误
-		}
+		api := serv.NewServ("can0", nil, nil)
+		api.OpenServ(ctx)
 	})
 
 	r.Run(":8888")
