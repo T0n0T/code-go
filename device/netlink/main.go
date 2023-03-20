@@ -58,9 +58,11 @@ func main() {
 	l, _ := ListenNetlink()
 	for {
 		_, err := l.ReadMsgs()
-		if err != nil {
-			fmt.Println("=========   ", err)
-		}
+		fmt.Println("循环中", err)
+		// _, err := l.ReadMsgs()
+		// if err != nil {
+		// 	fmt.Println("=========   ", err)
+		// }
 	}
 }
 
