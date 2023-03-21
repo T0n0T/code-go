@@ -11,7 +11,6 @@ import (
 )
 
 func BeepAct(action uint32) {
-
 	file, err := os.OpenFile("/dev/input/event0", os.O_RDWR, 0777)
 	if err != nil {
 		fmt.Println("open file failed, err:", err)
