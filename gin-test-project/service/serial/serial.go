@@ -2,8 +2,8 @@ package serial
 
 import (
 	"fmt"
+	"gin-test-project/model"
 	"strings"
-	"test/gin-test-project/model"
 
 	"github.com/gin-gonic/gin"
 	"github.com/olahol/melody"

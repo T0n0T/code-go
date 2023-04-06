@@ -2,7 +2,7 @@ package system
 
 import (
 	"fmt"
-	"test/gin-test-project/utils"
+	"gin-test-project/utils"
 
 	"github.com/gin-gonic/gin"
 )

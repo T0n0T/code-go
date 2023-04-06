@@ -1,0 +1,13 @@
+go 1.19
+
+use (
+	./basic
+	./gin-gorm-study
+	./gin-test-project	
+	./utils
+	./high/device
+	./high/cgo
+	./high/std
+	./high/net
+)
+

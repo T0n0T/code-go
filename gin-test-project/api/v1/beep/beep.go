@@ -1,8 +1,8 @@
 package beep
 
 import (
-	beep "test/gin-test-project/api/v1/beep/cbeep"
-	"test/gin-test-project/utils"
+	beep "gin-test-project/api/v1/beep/cbeep"
+	"gin-test-project/utils"
 
 	"github.com/gin-gonic/gin"
 )

@@ -7,7 +7,7 @@ import "C"
 import (
 	"fmt"
 	"os"
-	"test/utils"
+	"utils"
 )
 
 func BeepAct(action uint32) {

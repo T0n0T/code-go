@@ -1,8 +1,8 @@
 package service
 
 import (
-	"test/gin-test-project/service/lora"
-	"test/gin-test-project/service/serial"
+	"gin-test-project/service/lora"
+	"gin-test-project/service/serial"
 )
 
 type Servicegroup struct {

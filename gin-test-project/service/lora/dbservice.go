@@ -1,8 +1,8 @@
 package lora
 
 import (
-	"test/gin-test-project/model"
-	"test/gin-test-project/utils"
+	"gin-test-project/model"
+	"gin-test-project/utils"
 )
 
 type LoraService struct {

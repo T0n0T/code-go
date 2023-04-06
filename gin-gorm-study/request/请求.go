@@ -3,9 +3,9 @@ package request
 import (
 	"encoding/json"
 	"fmt"
+	pkgfile "gin-gorm-study/file"
 	"os"
 	"strconv"
-	pkgfile "test/file"
 
 	"github.com/gin-gonic/gin"
 )

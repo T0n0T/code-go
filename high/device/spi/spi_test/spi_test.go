@@ -1,12 +1,12 @@
 package main
 
 import (
+	"device/gpio"
+	"device/ioctl"
+	"device/spi"
 	"fmt"
 	"sync"
 	"syscall"
-	"test/device/gpio"
-	"test/device/ioctl"
-	"test/device/spi"
 	"time"
 	"unsafe"
 )

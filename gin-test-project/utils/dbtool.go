@@ -2,11 +2,11 @@ package utils
 
 import (
 	"fmt"
+	"gin-test-project/model"
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
-	"test/gin-test-project/model"
 
 	_ "github.com/go-sql-driver/mysql"
 	"gorm.io/driver/mysql"

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"test/gin-test-project/router"
-	"test/gin-test-project/utils"
+	"gin-test-project/router"
+	"gin-test-project/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,7 +19,6 @@ func main() {
 	utils.PROJ_DB.DB, _ = utils.PROJ_DB.InitSql(cfg)
 
 	GinSTART(cfg)
-	
 
 }
 

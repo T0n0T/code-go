@@ -1,10 +1,10 @@
 package serial
 
 import (
+	"gin-test-project/model"
+	"gin-test-project/service"
+	"gin-test-project/utils"
 	"net/http"
-	"test/gin-test-project/model"
-	"test/gin-test-project/service"
-	"test/gin-test-project/utils"
 
 	"github.com/gin-gonic/gin"
 )

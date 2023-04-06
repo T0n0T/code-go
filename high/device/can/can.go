@@ -1,7 +1,7 @@
 package main
 
 import (
-	serv "test/device/can/serv/v2"
+	serv "device/can/serv/v2"
 
 	"github.com/gin-gonic/gin"
 )

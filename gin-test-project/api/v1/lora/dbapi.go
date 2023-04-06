@@ -2,10 +2,10 @@ package lora
 
 import (
 	"fmt"
-	"test/gin-test-project/model"
-	"test/gin-test-project/utils"
+	"gin-test-project/model"
+	"gin-test-project/utils"
 
-	"test/gin-test-project/service"
+	"gin-test-project/service"
 
 	"github.com/gin-gonic/gin"
 )

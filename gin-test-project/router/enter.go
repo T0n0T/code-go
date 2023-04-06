@@ -1,10 +1,10 @@
 package router
 
 import (
-	"test/gin-test-project/router/beep"
-	"test/gin-test-project/router/lora"
-	"test/gin-test-project/router/serial"
-	"test/gin-test-project/router/system"
+	"gin-test-project/router/beep"
+	"gin-test-project/router/lora"
+	"gin-test-project/router/serial"
+	"gin-test-project/router/system"
 
 	"github.com/gin-gonic/gin"
 )

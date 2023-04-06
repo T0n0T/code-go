@@ -2,8 +2,9 @@ package system
 
 import (
 	"encoding/json"
-	pkgfile "test/file"
-	"test/gin-test-project/utils"
+
+	"gin-test-project/utils"
+	pkgfile "gin-test-project/utils/file"
 
 	"github.com/gin-gonic/gin"
 )

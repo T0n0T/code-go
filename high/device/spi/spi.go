@@ -1,6 +1,6 @@
 package spi
 
-import "test/device/ioctl"
+import "device/ioctl"
 
 const spiIoctlMAGIC = 'k'
 

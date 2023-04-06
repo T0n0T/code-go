@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
+	"gin-gorm-study/middleware"
+	"gin-gorm-study/request"
+	"gin-gorm-study/response"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
-	"test/gin-gorm-study/middleware"
-	"test/gin-gorm-study/request"
-	"test/gin-gorm-study/response"
 
 	"github.com/gin-gonic/gin"
 )
