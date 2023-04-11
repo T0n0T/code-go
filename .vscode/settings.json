@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "*.cpp": "cpp",
+        "*.html": "html",
+        "*.env": "dotenv",
+        "*.go": "go",
+        "foo.grpc-c.h": "c",
+        "string.h": "c",
+        "stdio.h": "c"
+    }
+}
