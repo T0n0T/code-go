@@ -31,9 +31,7 @@ func (*Mysql) InitSql(cfg *Config) (db *gorm.DB, err error) {
 }
 
 func (*Mysql) Export(cfg *Config) {
-	go func() {
-		RunCommand("./", "mysqldump", "-u"+cfg.Dbuser, "-p"+cfg.Dbpasswd, "gva", "-r"+"./tmp/gva.sql")
-	}()
+	go RunCommand("./", "mysqldump", "-u"+cfg.Dbuser, "-p"+cfg.Dbpasswd, "gva", "-r"+"./tmp/gva.sql")
 }
 
 func (*Mysql) Import(db *gorm.DB) (err error) {

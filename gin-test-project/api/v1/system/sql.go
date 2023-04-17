@@ -12,8 +12,10 @@ type SqlApi struct {
 
 func (*SqlApi) Export(c *gin.Context) {
 	utils.PROJ_DB.Export(&utils.PROJ_Config)
-	c.File("./tmp/gva.sql")
-	utils.OkWithMessage("导出sql文件...", c)
+
+	c.Writer.Header().Add("Content-Disposition", "attachment; filename=12323.zip") //fmt.Sprintf("attachment; filename=%s", filename)对下载的文件重命名
+	c.Writer.Header().Add("Content-Type", "application/octet-stream")
+	c.File("./tmp/backup.zip")
 }
 
 func (*SqlApi) Import(c *gin.Context) {

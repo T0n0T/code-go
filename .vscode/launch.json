@@ -5,20 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "gin-gorm-study",
-            "type": "go",
-            "request": "launch",
-            "mode": "auto",
-            "program": "${workspaceFolder}/gin-gorm-study/"
-        },
-        {
-            "name": "gin-project",
-            "type": "go",
-            "request": "launch",
-            "mode": "auto",
-            "program": "${workspaceFolder}/gin-test-project/"
-        },
-        {
             "name": "go单文件调试",
             "type": "go",
             "request": "launch",
@@ -29,7 +15,7 @@
             "name": "go: 交叉编译",
             "type": "go",
             "request": "launch",
-            "mode": "auto",
+            "mode": "auto",            
             "program": "${fileDirname}",
             "preLaunchTask": "go:linux交叉编译"
         },
@@ -46,7 +32,7 @@
             "externalConsole": false,
             "MIMode": "gdb",
             "miDebuggerPath": "arm-linux-gnueabihf-gdb",
-            "miDebuggerServerAddress": "192.168.1.101:12345", //remote gdb with gdbserver
+            "miDebuggerServerAddress": "192.168.1.101:2345", //remote gdb with gdbserver
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -66,7 +52,7 @@
             "defaultStringCharset": "utf-8",
             "remote": {
                 "enabled": true,
-                "address": "192.168.1.10:2345",
+                "address": "192.168.1.101:2345",
                 "mode": "remote",
                 "execfile": "test"
             }
