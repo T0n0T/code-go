@@ -2,3 +2,5 @@ build/
 .idea
 gin-gorm-study/save
 *.exe
+*.log
+*.zip
