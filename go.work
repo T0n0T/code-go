@@ -2,7 +2,7 @@ go 1.19
 
 use (
 	./basic
-	./gin-gorm-study
+	./gin-study
 	./gin-test-project	
 	./utils
 	./high/device

@@ -1,6 +1,6 @@
 build/
 .idea
-gin-gorm-study/save
+gin-study/save
 *.exe
 *.log
 *.zip

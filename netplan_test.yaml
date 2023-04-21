@@ -1,0 +1,24 @@
+network:
+    ethernets:
+        lan0:
+            addresses:
+                - 192.168.1.100/24
+            dhcp4: "no"
+            optional: true
+        lan1:
+            addresses:
+                - 192.168.2.102/24
+            dhcp4: "no"
+            optional: true
+        lan2:
+            addresses:
+                - 192.168.3.103/24
+            dhcp4: "no"
+            optional: true
+        lan3:
+            addresses:
+                - 192.168.4.104/24
+            dhcp4: "no"
+            optional: true
+    renderer: NetworkManager
+    version: 2

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"os"
 
 	"go.uber.org/zap"
@@ -35,4 +36,6 @@ func main() {
 	defer logger.Sync()
 
 	logger.Info("测试111", zap.String("键1", "值1"), zap.String("键2", "值2"))
+	logger.Error("无法读取目录%s", zap.Error(errors.New("/etc/sssssssss")), zap.String("err", "错误输出"))
+	sugarLogger.Infof("无法读取目录%s", "/etc/sssssssss")
 }
