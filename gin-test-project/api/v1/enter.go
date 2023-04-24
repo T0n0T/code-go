@@ -14,7 +14,7 @@ type Apigroup struct {
 	lora.DbloraApi
 	beep.BeepApi
 	serial.SerialApi
-	websocket.WebsocketServ
+	websocket.WebsocketService
 }
 
 var ApiEnter = new(Apigroup)

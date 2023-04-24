@@ -11,9 +11,9 @@ type WebsocketRouter struct {
 
 func (*WebsocketRouter) WebsocketServRouterInit(router *gin.Engine) {
 	dbr := router.Group("websocket")
-	routerapi := v1.ApiEnter.WebsocketServ
+	routerapi := v1.ApiEnter.WebsocketService
+	routerapi.InitFunc()
 	{
-		dbr.GET("", routerapi.Serv)
 		dbr.GET("/test", routerapi.TestServ)
 	}
 }

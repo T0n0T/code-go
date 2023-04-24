@@ -1,33 +1,102 @@
 package websocket
 
 import (
-	"gin-test-project/utils"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/olahol/melody"
 )
 
-type WebsocketServ struct {
+type WebsocketServ struct{}
+
+var (
+	WEBSERV  *melody.Melody
+	missions []*Mission
+	Sign     chan struct{}
+)
+
+type Mission struct {
+	session       *melody.Session
+	MissionName   string
+	MissionHandle Handle
 }
 
-func (*WebsocketServ) TestServ(c *gin.Context) {
-	type mission struct {
-		Name string
-		Age  int
+type Handle interface {
+	Send(*melody.Session)
+	Recv([]byte)
+}
+
+func WebsocketSend() {
+Loop:
+	for {
+		select {
+		case <-Sign:
+			break Loop
+		default:
+			for _, mission := range missions {
+				if mission.session != nil {
+					mission.MissionHandle.Send(mission.session)
+				}
+			}
+		}
 	}
-	a := mission{"sa", 12}
-	c.Set("mission", a)
-	c.Redirect(http.StatusTemporaryRedirect, "/websocket")
 }
 
-func (*WebsocketServ) Serv(c *gin.Context) {
-	mission, _ := c.Get("mission")
-	d, _ := utils.StructToBin(&mission)
-	m := melody.New()
-	m.HandleMessage(func(s *melody.Session, b []byte) {
-		m.Broadcast(b)
-		m.Broadcast(d)
-	})
-	m.HandleRequest(c.Writer, c.Request)
+func WebsocketRecv(ss *melody.Session, msg []byte) {
+	v, exists := ss.Get("mission")
+	if !exists {
+		return
+	}
+	m := v.(*Mission)
+	m.MissionHandle.Recv(msg)
+}
+
+func openWebsocketServ(ss *melody.Session) {
+	v, exists := ss.Get("mission")
+	if !exists {
+		return
+	}
+
+	m := v.(*Mission)
+	m.session = ss
+}
+
+func deleteFromSlice(slice []*Mission, elem *Mission) []*Mission {
+	for i, e := range slice {
+		if e == elem {
+			slice = append(slice[:i], slice[i+1:]...)
+			break
+		}
+	}
+	return slice
+}
+
+func closeWebsocketServ(ss *melody.Session) {
+	v, exists := ss.Get("mission")
+	if !exists {
+		return
+	}
+	m := v.(*Mission)
+	missions = deleteFromSlice(missions, m)
+}
+
+func openServ() {
+	WEBSERV.HandleMessage(WebsocketRecv)
+	WEBSERV.HandleConnect(openWebsocketServ)
+	WEBSERV.HandleDisconnect(closeWebsocketServ)
+	go WebsocketSend()
+}
+
+func RegisterWebsocketServ(ctx *gin.Context) {
+	v, exists := ctx.Get("mission")
+	if !exists {
+		return
+	}
+	m := v.(*Mission)
+	missions = append(missions, m)
+
+	WEBSERV.HandleRequestWithKeys(ctx.Writer, ctx.Request, ctx.Keys)
+}
+
+func NewServ(name string) (w *WebsocketServ, err error) {
+	Sign = make(chan struct{})
+	return
 }
