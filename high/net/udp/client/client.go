@@ -21,19 +21,29 @@ func main() {
 	}
 	defer socket.Close()
 
-	msg := model.LedMsg{Time: time.Now(), Status: true, Action: "sending..."}
-	a, _ := json.Marshal(msg)
-	sendData := []byte(a)
-	_, err = socket.Write(sendData) // 发送数据
-	if err != nil {
-		fmt.Println("发送数据失败，err: ", err)
-		return
+	data := make([]byte, 4096)
+	go func() {
+		for {
+			msg := model.LedMsg{Time: time.Now(), Status: true, Action: "sending..."}
+			a, _ := json.Marshal(msg)
+			sendData := []byte(a)
+			_, err = socket.Write(sendData) // 发送数据
+			if err != nil {
+				fmt.Println("发送数据失败，err: ", err)
+				return
+			}
+			time.Sleep(500 * time.Millisecond)
+		}
+
+	}()
+
+	for {
+		n, remoteAddr, err := socket.ReadFromUDP(data) // 接收数据
+		if err != nil {
+			fmt.Println("接收数据失败, err: ", err)
+			return
+		}
+		fmt.Printf("recv:%v addr:%v count:%v\n", string(data[:n]), remoteAddr, n)
 	}
-	// data := make([]byte, 4096)
-	// n, remoteAddr, err := socket.ReadFromUDP(data) // 接收数据
-	// if err != nil {
-	// 	fmt.Println("接收数据失败, err: ", err)
-	// 	return
-	// }
-	// fmt.Printf("recv:%v addr:%v count:%v\n", string(data[:n]), remoteAddr, n)
+
 }
