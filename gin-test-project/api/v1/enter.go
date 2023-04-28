@@ -5,6 +5,7 @@ import (
 	"gin-test-project/api/v1/lora"
 	"gin-test-project/api/v1/serial"
 	"gin-test-project/api/v1/system"
+	"gin-test-project/api/v1/udp"
 	"gin-test-project/api/v1/websocket"
 )
 
@@ -15,6 +16,7 @@ type Apigroup struct {
 	beep.BeepApi
 	serial.SerialApi
 	websocket.WebsocketService
+	udp.UDPService
 }
 
 var ApiEnter = new(Apigroup)

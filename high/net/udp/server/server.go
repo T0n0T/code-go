@@ -36,7 +36,6 @@ func main() {
 				fmt.Println("Write to udp failed, err: ", err)
 			}
 		}
-
 	}()
 	for {
 

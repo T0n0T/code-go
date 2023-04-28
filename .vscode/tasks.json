@@ -28,6 +28,8 @@
       "command": "go",
       "args": [
         "build",
+        "-gcflags",
+        "-N -l",
         "-o",
         "${workspaceFolder}/build/",
       ],

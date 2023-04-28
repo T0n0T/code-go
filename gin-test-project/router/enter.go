@@ -5,6 +5,7 @@ import (
 	"gin-test-project/router/lora"
 	"gin-test-project/router/serial"
 	"gin-test-project/router/system"
+	"gin-test-project/router/udp"
 	"gin-test-project/router/websocket"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,7 @@ type Routergroup struct {
 	system.ConfigRouter
 	system.SqlRouter
 	websocket.WebsocketRouter
+	udp.UDPRouter
 }
 
 var RouterEnter = new(Routergroup)
@@ -28,4 +30,5 @@ func InitRouter(r *gin.Engine) {
 	RouterEnter.BeepRouter.BeepRouterInit(r)
 	RouterEnter.SerialRouter.SerialRouterInit(r)
 	RouterEnter.WebsocketServRouterInit(r)
+	RouterEnter.UDPRouterInit(r)
 }
