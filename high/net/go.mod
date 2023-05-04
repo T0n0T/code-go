@@ -12,8 +12,17 @@ require (
 
 require (
 	github.com/google/uuid v1.3.0 // indirect
+	github.com/insomniacslk/dhcp v0.0.0-20230407062729-974c6f05fe16 // indirect
+	github.com/josharian/native v1.1.0 // indirect
+	github.com/mdlayher/ethernet v0.0.0-20190606142754-0394541c37b7 // indirect
+	github.com/mdlayher/raw v0.0.0-20191009151244-50f2db8cc065 // indirect
+	github.com/miekg/dns v1.1.54 // indirect
+	github.com/pierrec/lz4/v4 v4.1.17 // indirect
+	github.com/u-root/uio v0.0.0-20230305220412-3e8cd9d6bf63 // indirect
 	github.com/vishvananda/netns v0.0.0-20191106174202-0a2b9b5464df // indirect
+	golang.org/x/mod v0.8.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
+	golang.org/x/tools v0.6.0 // indirect
 )
 
 require (
