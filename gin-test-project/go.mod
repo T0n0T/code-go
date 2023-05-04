@@ -3,6 +3,7 @@ module gin-test-project
 go 1.19
 
 require utils v0.0.0
+
 replace utils => ../utils
 
 require (
