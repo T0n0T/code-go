@@ -17,6 +17,7 @@ type Routergroup struct {
 	lora.DbRouter
 	system.ConfigRouter
 	system.SqlRouter
+	system.LoggerRouter
 	websocket.WebsocketRouter
 	udp.UDPRouter
 }
@@ -31,4 +32,5 @@ func InitRouter(r *gin.Engine) {
 	RouterEnter.SerialRouter.SerialRouterInit(r)
 	RouterEnter.WebsocketServRouterInit(r)
 	RouterEnter.UDPRouterInit(r)
+	RouterEnter.LoggerRouterInit(r)
 }

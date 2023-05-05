@@ -12,6 +12,7 @@ import (
 type Apigroup struct {
 	system.ConfigApi
 	system.SqlApi
+	system.LoggerApi
 	lora.DbloraApi
 	beep.BeepApi
 	serial.SerialApi

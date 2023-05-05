@@ -29,7 +29,7 @@ type IpConfig struct {
 }
 
 func GetConfigInfo() (err error, info *IpConfig) {
-	link, err := netlink.LinkByName("ens37")
+	link, err := netlink.LinkByName("ens38")
 	if err != nil {
 		return
 	}
@@ -48,7 +48,6 @@ func GetConfigInfo() (err error, info *IpConfig) {
 
 func MaskTo4(hexmask string) string {
 	maskInt, _ := strconv.ParseInt(hexmask, 16, 64)
-	// mask := fmt.Sprintf("%s.%s.%s.%s", string(maskInt>>24), string(maskInt>>16), string(maskInt>>8), string(maskInt))
-	mask := fmt.Sprintf("%d.%d.%d.%d", maskInt>>24, maskInt>>16, maskInt>>8, maskInt)
+	mask := fmt.Sprintf("%d.%d.%d.%d", maskInt>>24, maskInt>>16&0xff, maskInt>>8&0xff, maskInt&0xff)
 	return mask
 }

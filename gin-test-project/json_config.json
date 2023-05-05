@@ -2,7 +2,7 @@
   "name": "test",
   "mode": "debug",
   "host": "",
-  "port": "8080",
+  "port": "8888",
   "dbuser": "admin",
   "dbpasswd":"",
   "dbhost": "127.0.0.1",
