@@ -1,0 +1,13 @@
+{
+  "name": "GW-WEB",
+  "version": "v1.0.0",
+  "app": {
+    "test": {
+      "auth": "test",
+      "version": "v1.0.0",
+      "bin": "test",
+      "packing": "./test",
+      "hash": "58f385bcf62fdb903ca0929c05b7af4bca95260548593f156510c22ba67d5238"
+    }
+  }
+}

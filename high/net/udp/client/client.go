@@ -15,6 +15,10 @@ func main() {
 		IP:   net.IPv4(0, 0, 0, 0),
 		Port: 30000,
 	})
+	listen, err := net.ListenUDP("udp", &net.UDPAddr{
+		IP:   net.IPv4(0, 0, 0, 0),
+		Port: 30001,
+	})
 	if err != nil {
 		fmt.Println("连接UDP服务器失败，err: ", err)
 		return
@@ -24,7 +28,7 @@ func main() {
 	data := make([]byte, 4096)
 	go func() {
 		for {
-			msg := model.LedMsg{Time: time.Now(), Status: true, Action: "sending..."}
+			msg := model.LedUDP{ID: 12, Status: true}
 			a, _ := json.Marshal(msg)
 			sendData := []byte(a)
 			_, err = socket.Write(sendData) // 发送数据
@@ -38,7 +42,7 @@ func main() {
 	}()
 
 	for {
-		n, remoteAddr, err := socket.ReadFromUDP(data) // 接收数据
+		n, remoteAddr, err := listen.ReadFromUDP(data) // 接收数据
 		if err != nil {
 			fmt.Println("接收数据失败, err: ", err)
 			return
