@@ -3,10 +3,6 @@ package main
 import (
 	"fmt"
 	"net"
-	"net-test/udp/model"
-	"time"
-
-	"github.com/goccy/go-json"
 )
 
 // UDP 客户端
@@ -26,20 +22,20 @@ func main() {
 	defer socket.Close()
 
 	data := make([]byte, 4096)
-	go func() {
-		for {
-			msg := model.LedUDP{ID: 12, Status: true}
-			a, _ := json.Marshal(msg)
-			sendData := []byte(a)
-			_, err = socket.Write(sendData) // 发送数据
-			if err != nil {
-				fmt.Println("发送数据失败，err: ", err)
-				return
-			}
-			time.Sleep(500 * time.Millisecond)
-		}
+	// go func() {
+	// 	for {
+	// 		msg := model.LedUDP{ID: 12, Status: true}
+	// 		a, _ := json.Marshal(msg)
+	// 		sendData := []byte(a)
+	// 		_, err = socket.Write(sendData) // 发送数据
+	// 		if err != nil {
+	// 			fmt.Println("发送数据失败，err: ", err)
+	// 			return
+	// 		}
+	// 		time.Sleep(500 * time.Millisecond)
+	// 	}
 
-	}()
+	// }()
 
 	for {
 		n, remoteAddr, err := listen.ReadFromUDP(data) // 接收数据

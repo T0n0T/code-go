@@ -24,45 +24,42 @@ func main() {
 		return
 	}
 	defer listen.Close()
-	// var data [1024]byte
-	// var msg model.LedUDP
+	var data [1024]byte
+	var msg model.UpdateMsg
 
 	// ch := make(chan SendPack, 5)
 	// go func() {
-	for {
-		// sendpack := <-ch
-
-		msg := model.LedUDP{ID: 12, Status: true}
-		a, _ := json.Marshal(msg)
-		sendData := []byte(a)
-
-		_, err = listen.WriteToUDP(sendData, &net.UDPAddr{
-			IP:   net.IPv4(0, 0, 0, 0),
-			Port: 30001,
-		}) // 发送数据
-		if err != nil {
-			fmt.Println("Write to udp failed, err: ", err)
-		}
-	}
-	// }()
 	// for {
+	// 	// sendpack := <-ch
 
-	// 	fmt.Println("111")
-	// 	n, addr, err := listen.ReadFromUDP(data[:]) // 接收数据
-	// 	fmt.Println("222")
+	// 	msg := model.LedUDP{ID: 12, Status: true}
+	// 	a, _ := json.Marshal(msg)
+	// 	sendData := []byte(a)
+
+	// 	_, err = listen.WriteToUDP(sendData, &net.UDPAddr{
+	// 		IP:   net.IPv4(0, 0, 0, 0),
+	// 		Port: 30001,
+	// 	}) // 发送数据
 	// 	if err != nil {
-	// 		fmt.Println("read udp failed, err: ", err)
-	// 		continue
+	// 		fmt.Println("Write to udp failed, err: ", err)
 	// 	}
-	// 	json.Unmarshal(data[:n], &msg)
-
-	// 	recvpack := SendPack{
-	// 		Addr: addr,
-	// 		Data: data[:n],
-	// 	}
-	// 	ch <- recvpack
-
-	// 	fmt.Println(msg)
-	// 	fmt.Printf("data:%v addr:%v count:%v\n", string(data[:n]), addr, n)
 	// }
+	// }()
+	for {
+		n, addr, err := listen.ReadFromUDP(data[:]) // 接收数据
+		if err != nil {
+			fmt.Println("read udp failed, err: ", err)
+			continue
+		}
+		json.Unmarshal(data[:n], &msg)
+
+		// recvpack := SendPack{
+		// 	Addr: addr,
+		// 	Data: data[:n],
+		// }
+		// ch <- recvpack
+
+		fmt.Println(msg)
+		fmt.Printf("data:%v addr:%v count:%v\n", string(data[:n]), addr, n)
+	}
 }
