@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
+	"net-test/udp/model"
+	"time"
 )
 
 // UDP 客户端
@@ -22,20 +25,23 @@ func main() {
 	defer socket.Close()
 
 	data := make([]byte, 4096)
-	// go func() {
-	// 	for {
-	// 		msg := model.LedUDP{ID: 12, Status: true}
-	// 		a, _ := json.Marshal(msg)
-	// 		sendData := []byte(a)
-	// 		_, err = socket.Write(sendData) // 发送数据
-	// 		if err != nil {
-	// 			fmt.Println("发送数据失败，err: ", err)
-	// 			return
-	// 		}
-	// 		time.Sleep(500 * time.Millisecond)
-	// 	}
+	go func() {
+		for {
+			msg := model.LedUDP{ID: 12, Status: true}
+			a, _ := json.Marshal(msg)
+			sendData := []byte(a)
+			dataLen := uint16(len(sendData))
+			d := []byte{0xab, 0xcd, 0x02, 0x01, byte(dataLen >> 8), byte(dataLen & 0xff)}
+			d = append(d, sendData...)
+			_, err = socket.Write(d) // 发送数据
+			if err != nil {
+				fmt.Println("发送数据失败，err: ", err)
+				return
+			}
+			time.Sleep(500 * time.Millisecond)
+		}
 
-	// }()
+	}()
 
 	for {
 		n, remoteAddr, err := listen.ReadFromUDP(data) // 接收数据
