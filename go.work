@@ -4,10 +4,10 @@ use (
 	./basic
 	./gin-study
 	./gin-test-project
-	./utils
-	./high/device
 	./high/cgo
-	./high/std
+	./high/device
 	./high/net
+	./high/std
+	./utils
 	./wapi-test
 )

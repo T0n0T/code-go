@@ -25,7 +25,7 @@ var connCmd = &cobra.Command{
 			n            = 10
 			success_time = 0
 		)
-		dead, err := time.ParseDuration(duration)
+		dead, err := time.ParseDuration(*duration)
 		cobra.CheckErr(err)
 		if number != nil {
 			n = *number
