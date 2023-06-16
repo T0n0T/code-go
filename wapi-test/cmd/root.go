@@ -4,10 +4,12 @@ Copyright © 2023 T0n0T [823478402@qq.com]
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -18,10 +20,10 @@ import (
 
 var (
 	cfgFile     string
-	sendch      chan []byte
-	recvch      chan []byte
+	sendch      chan string
+	recvch      chan string
 	EvalDeclare string
-	Config      *global.Config
+	C           global.Config
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -64,14 +66,9 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
-		pwd, err := os.Getwd()
-		cobra.CheckErr(err)
-
 		// Search config in home directory with name ".wapi.test" (without extension).
-		viper.AddConfigPath(pwd)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName("config")
+		viper.SetConfigType("toml")
+		viper.SetConfigFile("./config.toml")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -82,26 +79,28 @@ func initConfig() {
 	} else if err != nil {
 		panic(fmt.Errorf("fatal error config file: %w", err))
 	}
-	if err := viper.Unmarshal(Config); err != nil {
+
+	if err := viper.Unmarshal(&C); err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println(C)
+	openport()
 }
 
 func openport() {
 	mode := serial.Config{
-		Name:     Config.UartName,
-		Baud:     Config.Baud,
-		StopBits: serial.StopBits(Config.StopBits),
-		Parity:   serial.Parity(Config.Parity),
+		Name:     C.UART.Name,
+		Baud:     C.UART.Baud,
+		StopBits: serial.StopBits(C.UART.StopBits),
+		Parity:   serial.Parity(C.UART.Parity),
 	}
 	tty, err := serial.OpenPort(&mode)
 	if err != nil {
 		log.Fatal(err)
-		return
 	}
 
-	sendch = make(chan []byte, 10)
-	recvch = make(chan []byte, 10)
+	sendch = make(chan string, 10)
+	recvch = make(chan string, 10)
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
@@ -116,10 +115,11 @@ func openport() {
 		for {
 			select {
 			case data := <-sendch:
-				_, err := tty.Write(data)
+				_, err := tty.Write([]byte(fmt.Sprintln(data)))
 				if err != nil {
 					log.Fatal(err)
 				}
+				fmt.Println(fmt.Sprintln(data))
 			default:
 				time.Sleep(1 * time.Second)
 			}
@@ -128,17 +128,25 @@ func openport() {
 	}()
 
 	go func() {
-		buff := make([]byte, 100)
+		tmp := make([]byte, 10)
+		buf := bytes.NewBuffer(make([]byte, 100))
 		for {
-			n, err := tty.Read(buff)
-			if err != nil {
-				log.Fatal(err)
+			buf.Reset()
+			for {
+				n, err := tty.Read(tmp)
+				if err != nil {
+					log.Fatal(err)
+				}
+				if n == 0 {
+					fmt.Println("\nEOF")
+					break
+				}
+				buf.Write(tmp[:n])
+				if strings.LastIndex(buf.String(), "\n") != -1 {
+					break
+				}
 			}
-			if n == 0 {
-				fmt.Println("\nEOF")
-				continue
-			}
-			recvch <- buff[:n]
+			recvch <- buf.String()
 		}
 	}()
 }

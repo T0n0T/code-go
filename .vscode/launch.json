@@ -5,18 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "go单文件调试",
+            "name": "go调试",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "asRoot": true,
+            "args": [
+                "check",
+                "-w"
+            ],
             "program": "${fileDirname}"
         },
         {
             "name": "go: 交叉编译",
             "type": "go",
             "request": "launch",
-            "mode": "auto",            
+            "mode": "auto",
             "program": "${fileDirname}",
             "preLaunchTask": "go:linux交叉编译"
         },

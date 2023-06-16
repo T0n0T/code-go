@@ -6,22 +6,34 @@ type Config struct {
 }
 
 type Command struct {
-	CheckWlan  string `yaml:"check-wlan"`
-	CheckUart  string `yaml:"check-uart"`
-	Connect    string `yaml:"cnnect"`
-	DisConnect string `yaml:"disconnect"`
-	Send       string `yaml:"send"`
-	Recv       string `yaml:"recv"`
-	ShowMsg    string `yaml:"show-msg"`
+	Check      Check    `toml:"check" mapstructure:"check"`
+	Connect    []string `toml:"connect" mapstructure:"connect"`
+	DisConnect string   `toml:"disconnect" mapstructure:"disconnect"`
+	ShowMsg    string   `toml:"show-msg" mapstructure:"show-msg"`
+	// Send       string `toml:"send"`
+	// Recv       string `toml:"recv"`
+}
+
+type Check struct {
+	CheckWlan string `toml:"wlan" mapstructure:"wlan"`
+	CheckUart string `toml:"uart" mapstructure:"uart"`
 }
 
 type Setting struct {
-	WlanName string `yaml:"wlan-name"`
-	ASPath   string `yaml:"AS-path"`
-	STAPath  string `yaml:"STA-path"`
-	UartName string `yaml:"uart-name"`
-	Baud     int    `yaml:"baud"`
-	DataBits int    `yaml:"databit"`
-	Parity   int    `yaml:"parity"`
-	StopBits int    `yaml:"stopbit"`
+	WlanName string `toml:"wlan-name" mapstructure:"wlan-name"`
+	CA       CA     `toml:"ca" mapstructure:"ca"`
+	UART     UART   `toml:"uart" mapstructure:"uart"`
+}
+
+type CA struct {
+	ASPath  string `toml:"AS-path" mapstructure:"AS-path"`
+	STAPath string `toml:"STA-path" mapstructure:"STA-path"`
+}
+
+type UART struct {
+	Name     string `toml:"name" mapstructure:"name"`
+	Baud     int    `toml:"baud" mapstructure:"baud"`
+	DataBits int    `toml:"databit" mapstructure:"databit"`
+	Parity   int    `toml:"parity" mapstructure:"parity"`
+	StopBits int    `toml:"stopbit" mapstructure:"stopbit"`
 }

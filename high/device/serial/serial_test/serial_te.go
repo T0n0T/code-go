@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/tarm/serial"
 )
@@ -42,7 +43,7 @@ import (
 
 func main() {
 	mode := serial.Config{
-		Name:     "/dev/ttyCH9344USB1",
+		Name:     "COM7",
 		Baud:     115200,
 		StopBits: 1,
 	}
@@ -52,11 +53,13 @@ func main() {
 	}
 	go func() {
 		for {
-			n, err := tty.Write([]byte("jianggoujianggoujianggou\n\rsssss11111\n\r"))
+			_, err := tty.Write([]byte("test\n\rtest\n\r"))
 			if err != nil {
 				log.Fatal(err)
 			}
-			fmt.Printf("Sent %v bytes\n", n)
+			// fmt.Printf("Sent %v bytes\n", n)
+			time.Sleep(1 * time.Second)
+			tty.Write([]byte(""))
 		}
 
 	}()
@@ -69,7 +72,7 @@ func main() {
 			break
 		}
 		if n == 0 {
-			fmt.Println("\nEOF")
+			// fmt.Println("\nEOF")
 			break
 		}
 		fmt.Printf("%v", string(buff[:n]))

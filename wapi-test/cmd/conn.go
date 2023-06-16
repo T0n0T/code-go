@@ -1,40 +1,54 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
+	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
+)
+
+var (
+	number   *int
+	duration *string
 )
 
 // connCmd represents the conn command
 var connCmd = &cobra.Command{
 	Use:   "conn",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "使用来自config.yaml的AT命令进行连接测试",
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("conn called")
+		var (
+			n            = 10
+			success_time = 0
+		)
+		dead, err := time.ParseDuration(duration)
+		cobra.CheckErr(err)
+		if number != nil {
+			n = *number
+		}
+		for i := 0; i < n; i++ {
+			for _, cmd := range C.Command.Connect {
+				timeout := time.NewTimer(dead)
+				select {
+				case sendch <- cmd:
+				case <-timeout.C:
+					continue
+				}
+				if strings.Index(<-recvch, "OK") != -1 {
+					success_time++
+				}
+			}
+
+		}
 	},
 }
 
 func init() {
 	runCmd.AddCommand(connCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// connCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// connCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	number = connCmd.Flags().CountP("number", "n", "测试的次数")
+	duration = connCmd.Flags().StringP("duration", "d", "5s", "单次测试最大时间")
 }
