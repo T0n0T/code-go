@@ -1,0 +1,11 @@
+[integration]
+[integration.mqtt]
+command_topic_template = 'cn460_3/gateway/{{ .GatewayID }}/command/#'
+event_topic_template = "cn460_3/gateway/{{ .GatewayID }}/event/{{ .EventType }}\n"
+state_topic_template = 'cn460_3/gateway/{{ .GatewayID }}/state/{{ .StateType }}'
+
+[integration.mqtt.auth]
+[integration.mqtt.auth.generic]
+password = ''
+servers = ['tcp://mosquitto:1883']
+username = ''

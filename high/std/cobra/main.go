@@ -2,7 +2,7 @@
 package main
 
 import (
-	"test/cobra/cmd"
+	"std/cobra/cmd"
 )
 
 func main() {

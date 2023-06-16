@@ -17,7 +17,7 @@ type SendPack struct {
 func main() {
 	listen, err := net.ListenUDP("udp", &net.UDPAddr{
 		IP:   net.IPv4(0, 0, 0, 0),
-		Port: 30000,
+		Port: 30001,
 	})
 	if err != nil {
 		fmt.Println("Listen failed, err: ", err)
@@ -46,20 +46,14 @@ func main() {
 	// }
 	// }()
 	for {
-		n, addr, err := listen.ReadFromUDP(data[:]) // 接收数据
+		n, _, err := listen.ReadFromUDP(data[:]) // 接收数据
 		if err != nil {
 			fmt.Println("read udp failed, err: ", err)
 			continue
 		}
-		json.Unmarshal(data[:n], &msg)
-
-		// recvpack := SendPack{
-		// 	Addr: addr,
-		// 	Data: data[:n],
-		// }
-		// ch <- recvpack
+		msg = model.UpdateMsg{}
+		json.Unmarshal(data[7:n], &msg)
 
 		fmt.Println(msg)
-		fmt.Printf("data:%v addr:%v count:%v\n", string(data[:n]), addr, n)
 	}
 }

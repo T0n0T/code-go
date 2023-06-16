@@ -73,5 +73,22 @@
         "${workspaceFolder}/build/",
       ],
     },
+    {
+      "label": "go:win x86编译",
+      "type": "shell",
+      "options": {
+        "cwd": "${fileDirname}",
+        "env": {
+          "GOOS": "windows",
+          "GOARCH": "amd64",
+        }
+      },
+      "command": "go",
+      "args": [
+        "build",
+        "-o",
+        "${fileDirname}/build/",
+      ],
+    },
   ]
 }

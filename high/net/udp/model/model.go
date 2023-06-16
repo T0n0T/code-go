@@ -7,8 +7,8 @@ import (
 )
 
 type LedUDP struct {
-	ID     int  `json:"id"`
-	Status bool `json:"status"`
+	ID     int `json:"id"`
+	Status int `json:"status"`
 }
 
 type UpdateMsg struct {
