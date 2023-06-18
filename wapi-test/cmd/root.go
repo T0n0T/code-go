@@ -6,7 +6,6 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"strings"
@@ -19,11 +18,13 @@ import (
 )
 
 var (
-	cfgFile     string
-	sendch      chan string
-	recvch      chan string
-	EvalDeclare string
-	C           global.Config
+	cfgFile string
+	sendch  chan string
+	recvch  chan string
+	C       global.Config
+	// uart        *serial.Config
+	// tty         *serial.Port
+
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -81,23 +82,21 @@ func initConfig() {
 	}
 
 	if err := viper.Unmarshal(&C); err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 	}
 	fmt.Println(C)
 	openport()
 }
 
 func openport() {
-	mode := serial.Config{
+	uart := &serial.Config{
 		Name:     C.UART.Name,
 		Baud:     C.UART.Baud,
 		StopBits: serial.StopBits(C.UART.StopBits),
 		Parity:   serial.Parity(C.UART.Parity),
 	}
-	tty, err := serial.OpenPort(&mode)
-	if err != nil {
-		log.Fatal(err)
-	}
+	tty, err := serial.OpenPort(uart)
+	cobra.CheckErr(err)
 
 	sendch = make(chan string, 10)
 	recvch = make(chan string, 10)
@@ -105,10 +104,8 @@ func openport() {
 	signal.Notify(c, os.Interrupt)
 
 	go func() {
-		for _ = range c {
-			fmt.Println(EvalDeclare)
-			os.Exit(0)
-		}
+		<-c
+		os.Exit(0)
 	}()
 
 	go func() {
@@ -117,8 +114,11 @@ func openport() {
 			case data := <-sendch:
 				_, err := tty.Write([]byte(fmt.Sprintln(data)))
 				if err != nil {
-					log.Fatal(err)
+					switch err.Error() {
+						case 
+					}
 				}
+				cobra.CheckErr(err)
 				fmt.Println(fmt.Sprintln(data))
 			default:
 				time.Sleep(1 * time.Second)
@@ -135,7 +135,7 @@ func openport() {
 			for {
 				n, err := tty.Read(tmp)
 				if err != nil {
-					log.Fatal(err)
+					cobra.CheckErr(err)
 				}
 				if n == 0 {
 					fmt.Println("\nEOF")
