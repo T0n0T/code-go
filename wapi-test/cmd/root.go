@@ -18,10 +18,11 @@ import (
 )
 
 var (
-	cfgFile string
-	sendch  chan string
-	recvch  chan string
-	C       global.Config
+	cfgFile    string
+	sendch     chan string
+	recvch     chan string
+	C          global.Config
+	wrong_time int
 	// uart        *serial.Config
 	// tty         *serial.Port
 
@@ -69,7 +70,7 @@ func initConfig() {
 	} else {
 		// Search config in home directory with name ".wapi.test" (without extension).
 		viper.SetConfigType("toml")
-		viper.SetConfigFile("./config.toml")
+		viper.SetConfigFile("config.toml")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -105,6 +106,9 @@ func openport() {
 
 	go func() {
 		<-c
+		if wrong_time != 0 {
+			fmt.Fprintf(os.Stderr, "测试中串口发生了 %d 次异常\n", wrong_time)
+		}
 		os.Exit(0)
 	}()
 
@@ -114,11 +118,14 @@ func openport() {
 			case data := <-sendch:
 				_, err := tty.Write([]byte(fmt.Sprintln(data)))
 				if err != nil {
-					switch err.Error() {
-						case 
+					if strings.Contains(err.Error(), "file specified") {
+						wrong_time++
+						fmt.Fprintln(os.Stderr, "串口发送异常, 重新连接串口")
+						time.Sleep(2 * time.Second)
+						tty, err = serial.OpenPort(uart)
+						cobra.CheckErr(err)
 					}
 				}
-				cobra.CheckErr(err)
 				fmt.Println(fmt.Sprintln(data))
 			default:
 				time.Sleep(1 * time.Second)
@@ -135,7 +142,13 @@ func openport() {
 			for {
 				n, err := tty.Read(tmp)
 				if err != nil {
-					cobra.CheckErr(err)
+					if strings.Contains(err.Error(), "file specified") {
+						wrong_time++
+						fmt.Fprintln(os.Stderr, "串口接收异常, 重新连接串口")
+						time.Sleep(2 * time.Second)
+						tty, err = serial.OpenPort(uart)
+						cobra.CheckErr(err)
+					}
 				}
 				if n == 0 {
 					fmt.Println("\nEOF")
