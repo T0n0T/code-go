@@ -14,7 +14,6 @@
 		uart="AT+UART"
 
 [setting]
-	wlan-name="HC-WAPI"
 	[setting.ca]
 		AS-path="cyg_AS.cer"
 		STA-path="cyg_STA.cer"

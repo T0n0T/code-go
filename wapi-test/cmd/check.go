@@ -5,6 +5,8 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -21,13 +23,19 @@ var checkCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if *wlanflag {
 			sendch <- C.Command.Check.CheckWlan
-			fmt.Printf("%v", <-recvch)
-			close(recvch)
+			time.Sleep(1 * time.Second)
+			str := <-recvch
+			fmt.Printf("%s\n", str)
+			// close(recvch)
+			os.Exit(0)
 		}
 		if *uartflag {
 			sendch <- C.Command.Check.CheckUart
-			fmt.Printf("%v", <-recvch)
+			fmt.Println(<-recvch)
+			str := <-recvch
+			fmt.Printf("%s\n", str)
 			close(recvch)
+			os.Exit(0)
 		}
 	},
 }

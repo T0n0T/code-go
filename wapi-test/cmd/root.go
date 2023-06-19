@@ -4,28 +4,21 @@ Copyright © 2023 T0n0T [823478402@qq.com]
 package cmd
 
 import (
-	"bytes"
 	"fmt"
 	"os"
-	"os/signal"
-	"strings"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tarm/serial"
 	"wapi.test/global"
+	com "wapi.test/uart"
 )
 
 var (
-	cfgFile    string
-	sendch     chan string
-	recvch     chan string
-	C          global.Config
-	wrong_time int
-	// uart        *serial.Config
-	// tty         *serial.Port
-
+	cfgFile string
+	sendch  chan string
+	recvch  chan string
+	C       global.Config
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -96,70 +89,13 @@ func openport() {
 		StopBits: serial.StopBits(C.UART.StopBits),
 		Parity:   serial.Parity(C.UART.Parity),
 	}
-	tty, err := serial.OpenPort(uart)
+
+	sendch = make(chan string, 1)
+	recvch = make(chan string, 1)
+
+	err := com.Open(uart)
 	cobra.CheckErr(err)
-
-	sendch = make(chan string, 10)
-	recvch = make(chan string, 10)
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-
-	go func() {
-		<-c
-		if wrong_time != 0 {
-			fmt.Fprintf(os.Stderr, "测试中串口发生了 %d 次异常\n", wrong_time)
-		}
-		os.Exit(0)
-	}()
-
-	go func() {
-		for {
-			select {
-			case data := <-sendch:
-				_, err := tty.Write([]byte(fmt.Sprintln(data)))
-				if err != nil {
-					if strings.Contains(err.Error(), "file specified") {
-						wrong_time++
-						fmt.Fprintln(os.Stderr, "串口发送异常, 重新连接串口")
-						time.Sleep(2 * time.Second)
-						tty, err = serial.OpenPort(uart)
-						cobra.CheckErr(err)
-					}
-				}
-				fmt.Println(fmt.Sprintln(data))
-			default:
-				time.Sleep(1 * time.Second)
-			}
-		}
-
-	}()
-
-	go func() {
-		tmp := make([]byte, 10)
-		buf := bytes.NewBuffer(make([]byte, 100))
-		for {
-			buf.Reset()
-			for {
-				n, err := tty.Read(tmp)
-				if err != nil {
-					if strings.Contains(err.Error(), "file specified") {
-						wrong_time++
-						fmt.Fprintln(os.Stderr, "串口接收异常, 重新连接串口")
-						time.Sleep(2 * time.Second)
-						tty, err = serial.OpenPort(uart)
-						cobra.CheckErr(err)
-					}
-				}
-				if n == 0 {
-					fmt.Println("\nEOF")
-					break
-				}
-				buf.Write(tmp[:n])
-				if strings.LastIndex(buf.String(), "\n") != -1 {
-					break
-				}
-			}
-			recvch <- buf.String()
-		}
-	}()
+	go com.Exit()
+	go com.Send(sendch)
+	go com.Recv(sendch)
 }

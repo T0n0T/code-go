@@ -20,9 +20,8 @@ type Check struct {
 }
 
 type Setting struct {
-	WlanName string `toml:"wlan-name" mapstructure:"wlan-name"`
-	CA       CA     `toml:"ca" mapstructure:"ca"`
-	UART     UART   `toml:"uart" mapstructure:"uart"`
+	CA   CA   `toml:"ca" mapstructure:"ca"`
+	UART UART `toml:"uart" mapstructure:"uart"`
 }
 
 type CA struct {
