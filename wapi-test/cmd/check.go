@@ -21,22 +21,36 @@ var checkCmd = &cobra.Command{
 	Use:   "check",
 	Short: "查看当前模块设置",
 	Run: func(cmd *cobra.Command, args []string) {
+		var tmp string
 		if *wlanflag {
 			sendch <- C.Command.Check.CheckWlan
-			time.Sleep(1 * time.Second)
-			str := <-recvch
-			fmt.Printf("%s\n", str)
-			// close(recvch)
+		WLAN:
+			for {
+				select {
+				case tmp = <-recvch:
+					fmt.Fprintf(os.Stdout, "%s", tmp)
+				case <-time.After(2 * time.Second):
+					break WLAN
+				}
+			}
+			close(recvch)
 			os.Exit(0)
 		}
 		if *uartflag {
 			sendch <- C.Command.Check.CheckUart
-			fmt.Println(<-recvch)
-			str := <-recvch
-			fmt.Printf("%s\n", str)
+		UART:
+			for {
+				select {
+				case tmp = <-recvch:
+					fmt.Fprintf(os.Stdout, "%s", tmp)
+				case <-time.After(2 * time.Second):
+					break UART
+				}
+			}
 			close(recvch)
 			os.Exit(0)
 		}
+		fmt.Fprintln(os.Stderr, "undefine command.")
 	},
 }
 
@@ -44,6 +58,6 @@ func init() {
 	rootCmd.AddCommand(checkCmd)
 
 	// Here you will define your flags and configuration settings.
-	wlanflag = checkCmd.Flags().BoolP("wlan", "w", false, "check wapi module wlan setting")
-	uartflag = checkCmd.Flags().BoolP("uart", "u", false, "check wapi module uart setting")
+	wlanflag = checkCmd.Flags().BoolP("wlan", "w", false, "查看wapi模块的wlan设置情况")
+	uartflag = checkCmd.Flags().BoolP("uart", "u", false, "查看wapi模块的uart设置情况")
 }

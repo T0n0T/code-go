@@ -6,10 +6,9 @@ type Config struct {
 }
 
 type Command struct {
-	Check      Check    `toml:"check" mapstructure:"check"`
-	Connect    []string `toml:"connect" mapstructure:"connect"`
-	DisConnect string   `toml:"disconnect" mapstructure:"disconnect"`
-	ShowMsg    string   `toml:"show-msg" mapstructure:"show-msg"`
+	Check   Check   `toml:"check" mapstructure:"check"`
+	Connect Connect `toml:"connect" mapstructure:"connect"`
+
 	// Send       string `toml:"send"`
 	// Recv       string `toml:"recv"`
 }
@@ -19,9 +18,18 @@ type Check struct {
 	CheckUart string `toml:"uart" mapstructure:"uart"`
 }
 
+type Connect struct {
+	Reset   string   `toml:"reset" mapstructure:"reset"`
+	Link    string   `toml:"link" mapstructure:"link"`
+	UnLink  string   `toml:"unlink" mapstructure:"unlink"`
+	ShowMsg string   `toml:"show-msg" mapstructure:"show-msg"`
+	Config  []string `toml:"setting" mapstructure:"setting"`
+}
+
 type Setting struct {
-	CA   CA   `toml:"ca" mapstructure:"ca"`
-	UART UART `toml:"uart" mapstructure:"uart"`
+	WLAN string `toml:"wlan-name" mapstructure:"wlan-name"`
+	CA   CA     `toml:"ca" mapstructure:"ca"`
+	UART UART   `toml:"uart" mapstructure:"uart"`
 }
 
 type CA struct {

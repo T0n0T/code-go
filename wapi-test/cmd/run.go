@@ -4,8 +4,6 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -13,14 +11,7 @@ import (
 var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "运行测试",
-	Long: `运行连接测试或收发测试:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("run called")
-	},
+	Long:  `运行连接测试或收发测试:`,
 }
 
 func init() {

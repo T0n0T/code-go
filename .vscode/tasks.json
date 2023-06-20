@@ -86,6 +86,8 @@
       "command": "go",
       "args": [
         "build",
+        "-gcflags",
+        "all=-N -l",
         "-o",
         "${fileDirname}/build/",
       ],

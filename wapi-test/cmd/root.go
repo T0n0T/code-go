@@ -78,7 +78,7 @@ func initConfig() {
 	if err := viper.Unmarshal(&C); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
-	fmt.Println(C)
+
 	openport()
 }
 
@@ -97,5 +97,5 @@ func openport() {
 	cobra.CheckErr(err)
 	go com.Exit()
 	go com.Send(sendch)
-	go com.Recv(sendch)
+	go com.Recv(recvch)
 }

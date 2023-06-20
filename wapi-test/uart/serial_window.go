@@ -41,8 +41,8 @@ func Exit() {
 func Send(sendch chan string) {
 	for {
 		select {
-		case <-sendch:
-			_, err := tty.Write([]byte("fmt.Sprintln(data)\n"))
+		case data := <-sendch:
+			_, err := tty.Write([]byte(fmt.Sprintln(data)))
 			if err != nil {
 				if err == syscall.ERROR_OPERATION_ABORTED {
 					wrong_time++
@@ -84,8 +84,6 @@ func Recv(recvch chan string) {
 				break
 			}
 		}
-		// fmt.Println("1", buf.String())
 		recvch <- buf.String()
-		// fmt.Println("2", buf.String())
 	}
 }

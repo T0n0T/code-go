@@ -11,8 +11,8 @@
             "mode": "auto",
             "asRoot": true,
             "args": [
-                "check",
-                "-w"
+                "config",
+                "--sta"
             ],
             "program": "${fileDirname}"
         },

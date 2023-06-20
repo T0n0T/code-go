@@ -25,48 +25,93 @@ var connCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			tmp                      = ""
-			n                        = 10
 			success_time             = 0
 			success_duration float64 = 0
 		)
 		dead, err := time.ParseDuration(*duration)
 		cobra.CheckErr(err)
-		if number != nil {
-			n = *number
+
+		sendch <- C.Command.Connect.Reset
+	LoopReset:
+		for {
+			select {
+			case tmp = <-recvch:
+				fmt.Fprintf(os.Stdout, "%s", tmp)
+			case <-time.After(2 * time.Second):
+				fmt.Fprintf(os.Stderr, "wapi模块配置复位完成\n")
+				break LoopReset
+			}
 		}
-		fmt.Fprintln(os.Stdout, "使用默认的连接测试次数: 10, 可以使用-d指定")
-		for i := 0; i < n; i++ {
-			t := time.Now()
-			for _, cmd := range C.Command.Connect {
-				timeout := time.NewTimer(dead)
-				select {
-				case sendch <- cmd:
-				case <-timeout.C:
-					continue
-				}
+
+		fmt.Fprintf(os.Stdout, "配置wapi连接\n")
+		timeout := time.NewTimer(dead)
+		st := time.Now()
+		for _, cmd := range C.Command.Connect.Config {
+			timeout.Reset(dead)
+			tmp = ""
+			fmt.Fprintln(os.Stdout, cmd)
+			select {
+			case sendch <- cmd:
 				tmp = <-recvch
-				if !strings.Contains(tmp, "OK") {
-					break
-				}
+			case <-timeout.C:
+				fmt.Fprintf(os.Stderr, "wapi模块连接配置超时: %s\n", cmd)
 			}
-			cost := time.Since(t)
-			if strings.Contains(tmp, "mask") {
-				success_time++
-				success_duration += cost.Seconds()
-				sendch <- C.Command.DisConnect
-				<-recvch
+			fmt.Fprintf(os.Stdout, "%s", tmp)
+			if !strings.Contains(tmp, "OK") {
+				fmt.Fprintf(os.Stderr, "wapi模块连接配置失败: cmd: %s msg: %s", cmd, tmp)
+				os.Exit(1)
 			}
 		}
-		fmt.Fprintf(os.Stdout, `=================================================\n
+
+		fmt.Fprintf(os.Stdout, "wapi连接配置结束,使用了 %v 秒\n", time.Since(st).Seconds())
+
+		for i := 0; i < *number; i++ {
+			tmp = ""
+			timeout.Reset(dead)
+			t := time.Now()
+			select {
+			case sendch <- C.Command.Connect.Link:
+				fmt.Fprintf(os.Stdout, "%s\n", C.Command.Connect.Link)
+			case <-timeout.C:
+				fmt.Fprintf(os.Stderr, "wapi模块超时: %s\n", C.Command.Connect.Link)
+			}
+
+		Loop:
+			for {
+				select {
+				case tmp = <-recvch:
+					fmt.Fprintf(os.Stdout, "%s", tmp)
+					if strings.Contains(tmp, C.WLAN) {
+						cost := time.Since(t)
+						success_time++
+						success_duration += cost.Seconds()
+						fmt.Fprintf(os.Stdout, "第 %d 次成功连接\n", success_time)
+					}
+				case <-time.After(2 * time.Second):
+					break Loop
+				}
+			}
+
+			sendch <- C.Command.Connect.UnLink
+			<-recvch
+			fmt.Fprintf(os.Stdout, "断开第%d次测试连接\n", i+1)
+			fmt.Fprintf(os.Stdout, "=============================================================================\n")
+		}
+		if success_time != 0 && *number != 0 {
+			fmt.Fprintf(os.Stdout, `=============================================================================
 测试次数	|	连接成功率%%	|	成功连接平均耗时/s
-	%d     	|		%d     |		 %v 
-=================================================\n`,
-			n, success_time/n, success_duration/float64(success_time))
+%d		|	%v		|	%v\n
+=============================================================================`,
+				*number, float64(success_time)/float64(*number)*100, success_duration/float64(success_time))
+		} else {
+			fmt.Fprintln(os.Stderr, "没有成功的连接")
+		}
+
 	},
 }
 
 func init() {
 	runCmd.AddCommand(connCmd)
-	number = connCmd.Flags().CountP("number", "n", "测试的次数")
-	duration = connCmd.Flags().StringP("duration", "d", "5s", "单次测试最大时间")
+	number = connCmd.Flags().IntP("number", "n", 5, "测试的次数")
+	duration = connCmd.Flags().StringP("duration", "d", "10s", "单次测试最大时间")
 }

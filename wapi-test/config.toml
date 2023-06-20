@@ -1,24 +1,26 @@
-[command]
-	connect=[
+[command.connect]
+	link="AT+WJOIN"
+	unlink="AT+WLEAV"
+	show-msg="AT+LKSTT"
+	setting=[
 		"AT+WPRT=0",
 		'AT+SSID="HC-WAPI"',
 		'AT+KEY=1,1,0,""',
-		"AT+NIP=0",
-		"AT+WJOIN",
-		"AT+LKSTT"
+		"AT+NIP=0",		
 	]
-	disconnect="AT+WLEAV"
-	show-msg="AT+SKRPTM=1"
-	[command.check]
-		wlan="AT+WSCAN"
-		uart="AT+UART"
+	reset="AT+Z"
+	
+[command.check]
+	wlan="AT+WSCAN"
+	uart="AT+UART"
 
 [setting]
+	wlan-name="HC-WAPI"
 	[setting.ca]
 		AS-path="cyg_AS.cer"
 		STA-path="cyg_STA.cer"
 	[setting.uart]
-		name="COM15"
+		name="COM13"
 		baud=115200
 		databit=8
 		stopbit=1
