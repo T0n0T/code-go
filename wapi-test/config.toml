@@ -10,6 +10,13 @@
 	]
 	reset="AT+Z"
 	
+[command.control]
+	link-socket='AT+SKCT=0,0,"192.168.1.2",1234,1234'
+	unlink-socket="AT+SKCLS="
+	send="AT+SKSND="
+	recv="AT+SKRCV="
+	msg="hello"
+
 [command.check]
 	wlan="AT+WSCAN"
 	uart="AT+UART"

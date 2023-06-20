@@ -5,7 +5,10 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"net"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -13,8 +16,9 @@ import (
 )
 
 var (
-	number   *int
-	duration *string
+	number    *int
+	duration  *string
+	chat_flag *bool
 )
 
 // connCmd represents the conn command
@@ -68,6 +72,9 @@ var connCmd = &cobra.Command{
 			t := time.Now()
 			select {
 			case sendch <- C.Command.Connect.Link:
+				if *chat_flag {
+					Chat(dead)
+				}
 			case <-time.After(dead):
 				fmt.Fprintf(os.Stderr, "wapi模块超时: %s\n", C.Command.Connect.Link)
 			}
@@ -108,7 +115,104 @@ var connCmd = &cobra.Command{
 }
 
 func init() {
-	runCmd.AddCommand(connCmd)
+	rootCmd.AddCommand(connCmd)
 	number = connCmd.Flags().IntP("number", "n", 5, "测试的次数")
 	duration = connCmd.Flags().StringP("duration", "d", "5s", "单次测试最大时间")
+	chat_flag = connCmd.Flags().BoolP("chat", "c", false, "启用socket通信测试")
+}
+
+func Chat(d time.Duration) {
+	TCPUP()
+	fmt.Fprintf(os.Stdout, "测试socket通信\n")
+	var (
+		tmp        string
+		err        error
+		socket_num int
+	)
+	sendch <- C.Control.LinkSocket
+	if tmp = recv(1 * time.Second); strings.Contains(tmp, "OK") {
+		off := strings.Index(tmp, "OK")
+		socket_num, err = strconv.Atoi(tmp[off+1:])
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "socket获取失败\n")
+		}
+	} else {
+		fmt.Fprintf(os.Stderr, "socket获取失败\n")
+		sendch <- C.Control.UnLinkSocket
+		recv(d)
+		return
+	}
+	sendch <- fmt.Sprintf("%s%d,%d", C.Control.Send, socket_num, len(C.Control.Msg))
+	if strings.Contains(recv(200*time.Millisecond), "OK") {
+		sendch <- C.Control.Msg
+		sendch <- C.Control.Recv
+		if tmp = recv(1 * time.Second); strings.Contains(tmp, "OK") {
+			fmt.Fprintf(os.Stdout, "%s\n", tmp)
+		} else {
+			fmt.Fprintf(os.Stderr, "socket接收失败\n", C.Control.Msg)
+			sendch <- C.Control.UnLinkSocket
+			recv(d)
+			return
+		}
+	} else {
+		fmt.Fprintf(os.Stderr, "socket发送启动失败\n")
+		sendch <- C.Control.UnLinkSocket
+		recv(d)
+		return
+	}
+	fmt.Fprintf(os.Stdout, "结束socket通信测试\n")
+}
+
+func recv(d time.Duration) string {
+	var str = ""
+Loop:
+	for {
+		select {
+		case tmp := <-recvch:
+			str += tmp
+			fmt.Fprintf(os.Stdout, "%s", tmp)
+		case <-time.After(d):
+			fmt.Fprintf(os.Stderr, "接受字符串超时\r\n")
+			break Loop
+		}
+	}
+	return str
+}
+
+func TCPUP() {
+	// 启动服务器
+	listener, err := net.Listen("tcp", ":1234")
+	if err != nil {
+		log.Println("Failed to start server:", err)
+		return
+	}
+
+	// 循环接受客户端连接
+	conn, err := listener.Accept()
+	if err != nil {
+		log.Println("Failed to accept connection:", err)
+		return
+	}
+
+	go handleConnection(conn) // 启动一个 goroutine 处理连接
+}
+
+// 处理连接
+func handleConnection(conn net.Conn) {
+	defer conn.Close()
+
+	// 读取客户端发送的数据
+	buffer := make([]byte, 1024)
+	n, err := conn.Read(buffer)
+	if err != nil {
+		log.Println("Failed to read data:", err)
+		return
+	}
+
+	// 回传收到的数据给客户端
+	_, err = conn.Write(buffer[:n])
+	if err != nil {
+		log.Println("Failed to write data:", err)
+		return
+	}
 }

@@ -10,7 +10,7 @@ import (
 func main() {
 	// flag.Arg(1)
 	socket, err := net.DialUDP("udp", nil, &net.UDPAddr{
-		IP:   net.IPv4(0, 0, 0, 0),
+		IP:   net.IPv4(192, 168, 20, 5),
 		Port: 30000,
 	})
 	// listen, err := net.ListenUDP("udp", &net.UDPAddr{
