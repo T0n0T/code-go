@@ -51,6 +51,8 @@ func Send(sendch chan string) {
 					tty, err = serial.OpenPort(uart_config)
 					cobra.CheckErr(err)
 				}
+			} else {
+				fmt.Println(string(data))
 			}
 		default:
 			time.Sleep(1 * time.Second)

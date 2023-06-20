@@ -91,7 +91,7 @@ func openport() {
 	}
 
 	sendch = make(chan string, 1)
-	recvch = make(chan string, 1)
+	recvch = make(chan string, 5)
 
 	err := com.Open(uart)
 	cobra.CheckErr(err)

@@ -32,28 +32,26 @@ var connCmd = &cobra.Command{
 		cobra.CheckErr(err)
 
 		sendch <- C.Command.Connect.Reset
+		<-recvch
 	LoopReset:
 		for {
 			select {
 			case tmp = <-recvch:
 				fmt.Fprintf(os.Stdout, "%s", tmp)
 			case <-time.After(2 * time.Second):
-				fmt.Fprintf(os.Stderr, "wapi模块配置复位完成\n")
+				fmt.Fprintf(os.Stderr, "wapi模块配置复位完成\r\n")
 				break LoopReset
 			}
 		}
 
 		fmt.Fprintf(os.Stdout, "配置wapi连接\n")
-		timeout := time.NewTimer(dead)
 		st := time.Now()
 		for _, cmd := range C.Command.Connect.Config {
-			timeout.Reset(dead)
 			tmp = ""
-			fmt.Fprintln(os.Stdout, cmd)
 			select {
 			case sendch <- cmd:
 				tmp = <-recvch
-			case <-timeout.C:
+			case <-time.After(dead):
 				fmt.Fprintf(os.Stderr, "wapi模块连接配置超时: %s\n", cmd)
 			}
 			fmt.Fprintf(os.Stdout, "%s", tmp)
@@ -67,12 +65,10 @@ var connCmd = &cobra.Command{
 
 		for i := 0; i < *number; i++ {
 			tmp = ""
-			timeout.Reset(dead)
 			t := time.Now()
 			select {
 			case sendch <- C.Command.Connect.Link:
-				fmt.Fprintf(os.Stdout, "%s\n", C.Command.Connect.Link)
-			case <-timeout.C:
+			case <-time.After(dead):
 				fmt.Fprintf(os.Stderr, "wapi模块超时: %s\n", C.Command.Connect.Link)
 			}
 
@@ -87,7 +83,7 @@ var connCmd = &cobra.Command{
 						success_duration += cost.Seconds()
 						fmt.Fprintf(os.Stdout, "第 %d 次成功连接\n", success_time)
 					}
-				case <-time.After(2 * time.Second):
+				case <-time.After(5 * time.Second):
 					break Loop
 				}
 			}
@@ -95,7 +91,8 @@ var connCmd = &cobra.Command{
 			sendch <- C.Command.Connect.UnLink
 			<-recvch
 			fmt.Fprintf(os.Stdout, "断开第%d次测试连接\n", i+1)
-			fmt.Fprintf(os.Stdout, "=============================================================================\n")
+			fmt.Fprintf(os.Stdout, "-----------------------------------------------------------------------------\n")
+			time.Sleep(2 * time.Second)
 		}
 		if success_time != 0 && *number != 0 {
 			fmt.Fprintf(os.Stdout, `=============================================================================
@@ -113,5 +110,5 @@ var connCmd = &cobra.Command{
 func init() {
 	runCmd.AddCommand(connCmd)
 	number = connCmd.Flags().IntP("number", "n", 5, "测试的次数")
-	duration = connCmd.Flags().StringP("duration", "d", "10s", "单次测试最大时间")
+	duration = connCmd.Flags().StringP("duration", "d", "5s", "单次测试最大时间")
 }

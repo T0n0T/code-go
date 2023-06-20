@@ -98,7 +98,6 @@ func SendCer(typef int, path string) {
 			send_data.Data = b[i*480 : (i+1)*480]
 		}
 
-		fmt.Println(send_data.String() + "\n")
 		sendch <- send_data.String()
 		if !strings.Contains(<-recvch, "OK") {
 			fmt.Fprintln(os.Stderr, "导入证书失败")
