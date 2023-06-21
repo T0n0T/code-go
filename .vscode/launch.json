@@ -10,10 +10,10 @@
             "request": "launch",
             "mode": "auto",
             "asRoot": true,
-            "args": [
-                "config",
-                "--sta"
-            ],
+            // "args": [
+            //     "config",
+            //     "--sta"
+            // ],
             "program": "${fileDirname}"
         },
         {

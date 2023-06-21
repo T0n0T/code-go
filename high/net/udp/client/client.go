@@ -10,7 +10,7 @@ import (
 func main() {
 	// flag.Arg(1)
 	socket, err := net.DialUDP("udp", nil, &net.UDPAddr{
-		IP:   net.IPv4(192, 168, 20, 5),
+		IP:   net.IPv4(0, 0, 0, 0),
 		Port: 30000,
 	})
 	// listen, err := net.ListenUDP("udp", &net.UDPAddr{
@@ -39,13 +39,17 @@ func main() {
 	// 	}
 	// 	time.Sleep(1000 * time.Millisecond)
 	// }
-
+	var flag bool
 	for {
-		sendData := `{
-        "4": {
-            "status": 1
-        }
-    }`
+		var sendData string
+		if flag {
+			flag = false
+			sendData = `{"4": {"status": 1}}`
+		} else {
+			flag = true
+			sendData = `{"7": {"status": 0}}`
+		}
+
 		// a, _ := json.Marshal(msg)
 		// sendData := []byte(a)
 		dataLen := uint16(len(sendData))

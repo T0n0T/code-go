@@ -9,7 +9,6 @@ import (
 	"hash/crc32"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -98,11 +97,12 @@ func SendCer(typef int, path string) {
 			send_data.Data = b[i*480 : (i+1)*480]
 		}
 
-		sendch <- send_data.String()
-		if !strings.Contains(<-recvch, "OK") {
-			fmt.Fprintln(os.Stderr, "导入证书失败")
-			os.Exit(1)
-		}
+		// sendch <- send_data.String()
+		fmt.Println(send_data.String())
+		// if !strings.Contains(<-recvch, "OK") {
+		// 	fmt.Fprintln(os.Stderr, "导入证书失败")
+		// 	os.Exit(1)
+		// }
 	}
 	fmt.Fprintln(os.Stderr, "导入证书成功")
 }

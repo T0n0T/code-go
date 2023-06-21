@@ -90,8 +90,8 @@ func openport() {
 		Parity:   serial.Parity(C.UART.Parity),
 	}
 
-	sendch = make(chan string, 1)
-	recvch = make(chan string, 5)
+	sendch = make(chan string)
+	recvch = make(chan string, 1)
 
 	err := com.Open(uart)
 	cobra.CheckErr(err)

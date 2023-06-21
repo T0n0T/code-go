@@ -49,7 +49,8 @@ func Send(sendch chan string) {
 					fmt.Fprintln(os.Stderr, "串口发送异常, 重新连接串口")
 					time.Sleep(2 * time.Second)
 					tty, err = serial.OpenPort(uart_config)
-					cobra.CheckErr(err)
+					// cobra.CheckErr(err)
+					fmt.Println(err)
 				}
 			} else {
 				fmt.Println(string(data))
